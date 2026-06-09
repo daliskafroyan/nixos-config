@@ -128,6 +128,7 @@ in
     zed-editor
     vesktop
     ferdium
+    fastfetch
     nodejs
     opencode
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
