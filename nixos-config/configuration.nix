@@ -116,11 +116,14 @@ in
   environment.systemPackages = with pkgs; [
     alacritty
     foot
+    gh
+    git
     xfce.thunar
     gruvbox-gtk-theme
     gruvbox-dark-icons-gtk
     wl-clipboard
     chromium
+    inputs.helium-browser.packages.${pkgs.stdenv.hostPlatform.system}.helium
     youtube-music
     zed-editor
     vesktop
