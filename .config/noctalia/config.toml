@@ -1,0 +1,50 @@
+[shell]
+font_family = "IBM Plex Sans"
+niri_overview_type_to_launch_enabled = true
+telemetry_enabled = false
+corner_radius_scale = 0.0
+
+[theme]
+mode = "dark"
+source = "builtin"
+builtin = "Gruvbox"
+
+[hooks]
+theme_mode_changed = "sh ~/.config/noctalia/scripts/sync-alacritty-theme.sh"
+
+[shell.panel]
+control_center_placement = "attached"
+launcher_placement = "centered"
+
+[shell.shadow]
+direction = "down"
+alpha = 0.18
+
+[bar.main]
+position = "top"
+thickness = 34
+radius = 0
+margin_ends = 0
+margin_edge = 0
+padding = 14
+widget_spacing = 6
+shadow = false
+
+start = ["launcher", "wallpaper", "workspaces"]
+center = []
+end = ["clock", "media", "tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "control-center", "session"]
+
+[notification]
+enable_daemon = true
+
+[brightness]
+enable_ddcutil = false
+
+[wallpaper]
+enabled = true
+directory_dark = "/home/yoran/Wallpapers/dark"
+directory_light = "/home/yoran/Wallpapers/light"
+fill_mode = "crop"
+
+[backdrop]
+enabled = false

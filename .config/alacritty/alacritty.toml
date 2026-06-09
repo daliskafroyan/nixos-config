@@ -1,0 +1,8 @@
+[general]
+import = [
+  "~/.config/alacritty/theme-current.toml",
+]
+
+[window]
+opacity = 0.75
+padding = { x = 10, y = 10 }
