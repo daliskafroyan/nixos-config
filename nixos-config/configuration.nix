@@ -127,7 +127,6 @@ in
     youtube-music
     zed-editor
     vesktop
-    ferdium
     fastfetch
     nodejs
     opencode
