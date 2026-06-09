@@ -127,6 +127,7 @@ in
     youtube-music
     zed-editor
     vesktop
+    ferdium
     nodejs
     opencode
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
