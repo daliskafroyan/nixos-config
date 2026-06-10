@@ -1,6 +1,14 @@
 { config, pkgs, inputs, ... }:
 
 let
+  obsidianUpstream = pkgs.obsidian.overrideAttrs (_: {
+    version = "1.12.7";
+    src = pkgs.fetchurl {
+      url = "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.12.7/obsidian-1.12.7.tar.gz";
+      hash = "sha256-/L4IsRHZwf2wm5wIlSsG4cgpxiFj66JYTEtOyFm+B50=";
+    };
+  });
+
   opencode = pkgs.stdenv.mkDerivation {
     pname = "opencode";
     version = "1.16.2";
@@ -130,6 +138,7 @@ in
     inputs.helium-browser.packages.${pkgs.stdenv.hostPlatform.system}.helium
     youtube-music
     inputs.zed.packages.${pkgs.stdenv.hostPlatform.system}.default
+    obsidianUpstream
     vesktop
     fastfetch
     nodejs
