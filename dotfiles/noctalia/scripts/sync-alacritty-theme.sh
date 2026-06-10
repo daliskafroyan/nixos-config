@@ -14,4 +14,5 @@ case "$mode" in
     ;;
 esac
 
+rm -f "$theme_dir/theme-current.toml"
 cp "$source_file" "$theme_dir/theme-current.toml"
