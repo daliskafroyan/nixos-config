@@ -5,6 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     noctalia.url = "github:noctalia-dev/noctalia";
     helium-browser.url = "github:oxcl/nix-flake-helium-browser";
+    zed.url = "github:zed-industries/zed";
   };
 
   outputs = inputs@{ nixpkgs, ... }: {

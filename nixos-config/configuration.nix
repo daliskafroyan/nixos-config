@@ -55,9 +55,13 @@ in
   nixpkgs.config.allowUnfree = true;
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
-    extra-substituters = [ "https://noctalia.cachix.org" ];
+    extra-substituters = [
+      "https://noctalia.cachix.org"
+      "https://zed.cachix.org"
+    ];
     extra-trusted-public-keys = [
       "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+      "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
     ];
   };
 
@@ -125,7 +129,7 @@ in
     chromium
     inputs.helium-browser.packages.${pkgs.stdenv.hostPlatform.system}.helium
     youtube-music
-    zed-editor
+    inputs.zed.packages.${pkgs.stdenv.hostPlatform.system}.default
     vesktop
     fastfetch
     nodejs
