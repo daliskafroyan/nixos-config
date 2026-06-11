@@ -41,7 +41,7 @@ in
 {
   environment.systemPackages = with pkgs; [
     alacritty
-    foot
+    btop
     gh
     git
     xfce.thunar
