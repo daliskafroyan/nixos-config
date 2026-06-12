@@ -17,6 +17,8 @@
       source = ../dotfiles/noctalia/scripts/sync-alacritty-theme.sh;
       executable = true;
     };
+    "opencode/opencode.jsonc".source = ../dotfiles/opencode/opencode.jsonc;
+    "opencode/skills/grill-me/SKILL.md".source = ../dotfiles/opencode/skills/grill-me/SKILL.md;
   };
 
   home.activation.alacrittyThemeCurrent = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
