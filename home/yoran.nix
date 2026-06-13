@@ -10,7 +10,6 @@
     "alacritty/alacritty.toml".source = ../dotfiles/alacritty/alacritty.toml;
     "alacritty/theme-dark.toml".source = ../dotfiles/alacritty/theme-dark.toml;
     "alacritty/theme-light.toml".source = ../dotfiles/alacritty/theme-light.toml;
-    "foot/foot.ini".source = ../dotfiles/foot/foot.ini;
     "niri/config.kdl".source = ../dotfiles/niri/config.kdl;
     "noctalia/config.toml".source = ../dotfiles/noctalia/config.toml;
     "noctalia/nix-snowflake-colours.svg".source = ../dotfiles/noctalia/nix-snowflake-colours.svg;
