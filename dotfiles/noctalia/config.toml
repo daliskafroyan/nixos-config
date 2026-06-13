@@ -22,17 +22,71 @@ alpha = 0.18
 
 [bar.main]
 position = "top"
-thickness = 34
+thickness = 28
+background_opacity = 1.0
 radius = 0
-margin_ends = 0
-margin_edge = 0
-padding = 14
-widget_spacing = 6
+margin_ends = 12
+margin_edge = 12
+padding = 8
+widget_spacing = 2
 shadow = false
+capsule = true
+capsule_fill = "surface_variant"
+capsule_border = ""
+capsule_radius = 0.0
+capsule_padding = 8.0
+capsule_opacity = 1.0
 
 start = ["launcher", "wallpaper", "workspaces"]
 center = []
-end = ["clock", "media", "tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "control-center", "session"]
+end = ["media", "tray", "notifications", "clipboard", "network", "bluetooth", "volume", "battery", "weather", "clock", "control-center", "session"]
+
+[[bar.main.capsule_group]]
+id = "signals"
+members = ["network", "bluetooth", "volume", "battery"]
+fill = "surface_variant"
+border = ""
+opacity = 1.0
+padding = 8.0
+radius = 0.0
+
+[[bar.main.capsule_group]]
+id = "actions"
+members = ["clock", "control-center", "session"]
+fill = "surface_variant"
+border = ""
+opacity = 1.0
+padding = 8.0
+radius = 0.0
+
+[bar.main.monitor.laptop]
+match = "eDP-1"
+end = ["media", "tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "clock", "control-center", "session"]
+
+[[bar.main.monitor.laptop.capsule_group]]
+id = "signals"
+members = ["network", "bluetooth", "volume", "brightness", "battery"]
+fill = "surface_variant"
+border = ""
+opacity = 1.0
+padding = 8.0
+radius = 0.0
+
+[[bar.main.monitor.laptop.capsule_group]]
+id = "actions"
+members = ["clock", "control-center", "session"]
+fill = "surface_variant"
+border = ""
+opacity = 1.0
+padding = 8.0
+radius = 0.0
+
+[widget.clock]
+format = "{:%d/%m %H:%M}"
+
+[widget.control-center]
+custom_image = "/home/yoran/.config/noctalia/nix-snowflake-colours.svg"
+custom_image_colorize = false
 
 [notification]
 enable_daemon = true
@@ -48,3 +102,11 @@ fill_mode = "crop"
 
 [backdrop]
 enabled = false
+
+[weather]
+enabled = true
+refresh_minutes = 30
+unit = "celsius"
+
+[location]
+auto_locate = true

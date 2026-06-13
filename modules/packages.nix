@@ -42,6 +42,7 @@ in
   environment.systemPackages = with pkgs; [
     alacritty
     btop
+    cmatrix
     gh
     git
     xfce.thunar
