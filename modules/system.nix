@@ -25,6 +25,9 @@
 
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
+  networking.networkmanager.plugins = with pkgs; [
+    networkmanager-openvpn
+  ];
   hardware.bluetooth.enable = true;
   services.power-profiles-daemon.enable = true;
   services.upower.enable = true;
@@ -40,8 +43,13 @@
   users.users.yoran = {
     isNormalUser = true;
     description = "yoran";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [ ];
+  };
+
+  virtualisation.docker = {
+    enable = true;
+    package = pkgs.docker_29;
   };
 
   environment.sessionVariables = {

@@ -6,6 +6,15 @@
   home.stateVersion = "25.11";
 
   xdg.enable = true;
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      vpn-up = ''nmcli --ask connection up id "ritase-royan-vpn"'';
+      vpn-down = ''nmcli connection down id "ritase-royan-vpn"'';
+      vpn-status = ''nmcli connection show --active'';
+    };
+  };
+
   xdg.configFile = {
     "alacritty/alacritty.toml".source = ../dotfiles/alacritty/alacritty.toml;
     "alacritty/theme-dark.toml".source = ../dotfiles/alacritty/theme-dark.toml;

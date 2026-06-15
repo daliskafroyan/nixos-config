@@ -45,6 +45,8 @@ in
     cmatrix
     gh
     git
+    networkmanagerapplet
+    openvpn
     xfce.thunar
     gruvbox-gtk-theme
     gruvbox-dark-icons-gtk
