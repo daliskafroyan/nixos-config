@@ -81,9 +81,9 @@
             status = "disable";
           }
           {
-            criteria = "DP-2";
+            criteria = "LG Electronics LG FULL HD 0x01010101";
             status = "enable";
-            mode = "1600x900";
+            mode = "1920x1080";
             scale = 1.0;
             position = "0,0";
           }
