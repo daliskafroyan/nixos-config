@@ -7,6 +7,10 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     noctalia.url = "github:noctalia-dev/noctalia";
     helium-browser.url = "github:oxcl/nix-flake-helium-browser";
     zed.url = "github:zed-industries/zed";
@@ -18,6 +22,7 @@
       specialArgs = { inherit inputs; };
       modules = [
         ./hosts/nixos/configuration.nix
+        inputs.sops-nix.nixosModules.sops
         home-manager.nixosModules.home-manager
       ];
     };

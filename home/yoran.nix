@@ -14,6 +14,45 @@
       vpn-status = ''nmcli connection show --active'';
     };
   };
+  programs.ssh = {
+    enable = true;
+    matchBlocks = {
+      github-personal = {
+        hostname = "github.com";
+        user = "git";
+        identityFile = [ "~/.ssh/id_ed25519_personal" ];
+        identitiesOnly = true;
+      };
+
+      github-work = {
+        hostname = "github.com";
+        user = "git";
+        identityFile = [ "~/.ssh/id_ed25519_work" ];
+        identitiesOnly = true;
+      };
+
+      lambda-dev = {
+        hostname = "172.16.2.21";
+        user = "lambda";
+        identityFile = [ "~/.ssh/lambda-staging" ];
+        identitiesOnly = true;
+      };
+
+      lambda-staging = {
+        hostname = "172.16.2.21";
+        user = "lambda";
+        identityFile = [ "~/.ssh/lambda-staging" ];
+        identitiesOnly = true;
+      };
+
+      lambda-prod = {
+        hostname = "10.0.3.33";
+        user = "lambda";
+        identityFile = [ "~/.ssh/lambda-prod" ];
+        identitiesOnly = true;
+      };
+    };
+  };
 
   xdg.configFile = {
     "alacritty/alacritty.toml".source = ../dotfiles/alacritty/alacritty.toml;

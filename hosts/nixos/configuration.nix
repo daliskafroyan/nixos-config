@@ -6,6 +6,7 @@
     ../../modules/system.nix
     ../../modules/fonts.nix
     ../../modules/packages.nix
+    ../../modules/secrets.nix
     ../../modules/gtk.nix
   ];
 

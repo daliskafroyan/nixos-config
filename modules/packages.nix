@@ -47,6 +47,8 @@ in
     git
     networkmanagerapplet
     openvpn
+    sops
+    ssh-to-age
     xfce.thunar
     gruvbox-gtk-theme
     gruvbox-dark-icons-gtk
