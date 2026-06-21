@@ -76,6 +76,7 @@
     };
     "opencode/opencode.jsonc".source = ../dotfiles/opencode/opencode.jsonc;
     "opencode/skills/grill-me/SKILL.md".source = ../dotfiles/opencode/skills/grill-me/SKILL.md;
+    "zed/settings.json".source = ../dotfiles/zed/settings.json;
   };
 
   services.kanshi = {
