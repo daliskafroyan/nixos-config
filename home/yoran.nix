@@ -9,9 +9,17 @@
   programs.bash = {
     enable = true;
     shellAliases = {
-      vpn-up = ''nmcli --ask connection up id "ritase-royan-vpn"'';
-      vpn-down = ''nmcli connection down id "ritase-royan-vpn"'';
-      vpn-status = ''nmcli connection show --active'';
+      vpn-up = ''sudo "$HOME/.local/bin/ritase-vpn" up'';
+      vpn-down = ''sudo "$HOME/.local/bin/ritase-vpn" down'';
+      vpn-status = ''"$HOME/.local/bin/ritase-vpn" status'';
+      vpn-up-nm = ''nmcli --ask connection up id "ritase-royan-vpn"'';
+      vpn-down-nm = ''nmcli connection down id "ritase-royan-vpn"'';
+    };
+  };
+  home.file = {
+    ".local/bin/ritase-vpn" = {
+      source = ../dotfiles/noctalia/scripts/ritase-vpn;
+      executable = true;
     };
   };
   programs.ssh = {

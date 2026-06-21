@@ -1,0 +1,250 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use IO::Socket::UNIX;
+use MIME::Base64 qw(decode_base64);
+use Socket qw(SOCK_STREAM);
+
+my $profile_name      = 'ritase-royan-vpn';
+my $remote_host       = '13.250.155.188';
+my $remote_port       = '17671';
+my $default_username  = 'nil';
+my $management_socket = "/tmp/ritase-vpn-$$.sock";
+
+my $ca_path = '/home/yoran/.local/share/networkmanagement/certificates/nm-openvpn/ritase-royan-vpn-ca.pem';
+my $cert_path = '/home/yoran/.local/share/networkmanagement/certificates/nm-openvpn/ritase-royan-vpn-cert.pem';
+my $key_path = '/home/yoran/.local/share/networkmanagement/certificates/nm-openvpn/ritase-royan-vpn-key.pem';
+my $tls_auth_path = '/home/yoran/.local/share/networkmanagement/certificates/nm-openvpn/ritase-royan-vpn-tls-auth.pem';
+
+END {
+    unlink $management_socket if defined $management_socket && -e $management_socket;
+}
+
+sub usage {
+    die "Usage: ritase-vpn <up|down|status>\n";
+}
+
+sub require_root {
+    die "Run this command with sudo.\n" if $> != 0;
+}
+
+sub shell_stty {
+    my ($mode) = @_;
+    system('sh', '-c', "stty $mode < /dev/tty > /dev/tty 2>/dev/null");
+}
+
+sub prompt {
+    my ($label, $secret, $default) = @_;
+
+    open my $tty, '+<', '/dev/tty' or die "Cannot open /dev/tty: $!\n";
+    print {$tty} $label;
+    print {$tty} " [$default]" if defined $default && length $default;
+    print {$tty} ': ';
+
+    shell_stty('-echo') if $secret;
+    my $value = <$tty>;
+    shell_stty('echo') if $secret;
+    print {$tty} "\n" if $secret;
+
+    defined $value or die "Failed to read input.\n";
+    chomp $value;
+    $value = $default if defined $default && $value eq '';
+
+    close $tty;
+    return $value;
+}
+
+sub mgmt_quote {
+    my ($value) = @_;
+    $value =~ s/\\/\\\\/g;
+    $value =~ s/"/\\"/g;
+    return qq{"$value"};
+}
+
+sub vpn_openvpn_pids {
+    open my $ps, '-|', 'ps', '-eo', 'pid=,args=' or die "Failed to run ps: $!\n";
+    my @pids;
+
+    while (my $line = <$ps>) {
+        next unless $line =~ /^\s*(\d+)\s+(.*)$/;
+        my ($pid, $args) = ($1, $2);
+        next unless $args =~ /\bopenvpn\b/;
+        next unless $args =~ /\Q$ca_path\E/;
+        next unless $args =~ /\Q$remote_host\E\s+\Q$remote_port\E/;
+        push @pids, $pid;
+    }
+
+    close $ps;
+    return @pids;
+}
+
+sub connect_management {
+    for (1 .. 50) {
+        my $sock = IO::Socket::UNIX->new(
+            Type => SOCK_STREAM,
+            Peer => $management_socket,
+        );
+        return $sock if $sock;
+        select undef, undef, undef, 0.2;
+    }
+
+    die "Could not connect to OpenVPN management socket at $management_socket\n";
+}
+
+sub nm_profile_active {
+    open my $nm, '-|', 'nmcli', '-t', '-g', 'NAME', 'connection', 'show', '--active'
+      or return 0;
+
+    while (my $line = <$nm>) {
+        chomp $line;
+        if ($line eq $profile_name) {
+            close $nm;
+            return 1;
+        }
+    }
+
+    close $nm;
+    return 0;
+}
+
+sub command_status {
+    my @pids = vpn_openvpn_pids();
+
+    if (@pids) {
+        print "ritase-vpn: running (openvpn pid" . (@pids > 1 ? 's' : '') . ' ' . join(', ', @pids) . ")\n";
+    } else {
+        print "ritase-vpn: not running\n";
+    }
+
+    print "NetworkManager profile '$profile_name': " . (nm_profile_active() ? "active\n" : "inactive\n");
+
+    system('nmcli', 'connection', 'show', '--active');
+}
+
+sub command_down {
+    require_root();
+
+    my @pids = vpn_openvpn_pids();
+    if (@pids) {
+        kill 'TERM', @pids;
+        print "Stopped ritase-vpn openvpn pid" . (@pids > 1 ? 's' : '') . ' ' . join(', ', @pids) . "\n";
+    } else {
+        print "ritase-vpn: no direct openvpn session running\n";
+    }
+
+    if (nm_profile_active()) {
+        system('nmcli', 'connection', 'down', 'id', $profile_name);
+    }
+}
+
+sub command_up {
+    require_root();
+
+    my @existing_pids = vpn_openvpn_pids();
+    if (@existing_pids) {
+        print "ritase-vpn: already running (openvpn pid" . (@existing_pids > 1 ? 's' : '') . ' ' . join(', ', @existing_pids) . ")\n";
+        return;
+    }
+
+    unlink $management_socket if -e $management_socket;
+
+    my $username = prompt('VPN username', 0, $default_username);
+    my $password = prompt('VPN password', 1, undef);
+
+    my @openvpn_cmd = (
+        'openvpn',
+        '--client',
+        '--dev', 'tun',
+        '--dev-type', 'tun',
+        '--proto', 'udp',
+        '--remote', $remote_host, $remote_port,
+        '--nobind',
+        '--resolv-retry', 'infinite',
+        '--auth', 'SHA1',
+        '--cipher', 'AES-128-CBC',
+        '--data-ciphers-fallback', 'AES-128-CBC',
+        '--remote-cert-tls', 'server',
+        '--ca', $ca_path,
+        '--cert', $cert_path,
+        '--key', $key_path,
+        '--tls-auth', $tls_auth_path, '1',
+        '--auth-user-pass',
+        '--auth-retry', 'interact',
+        '--auth-nocache',
+        '--connect-timeout', '4',
+        '--ping', '10',
+        '--ping-restart', '60',
+        '--push-peer-info',
+        '--management', $management_socket, 'unix',
+        '--management-query-passwords',
+        '--verb', '3',
+    );
+
+    my $pid = fork();
+    defined $pid or die "fork failed: $!\n";
+
+    if ($pid == 0) {
+        exec @openvpn_cmd;
+        die "Failed to exec openvpn: $!\n";
+    }
+
+    my $sock = connect_management();
+    $sock->autoflush(1);
+
+    my ($pending_state, $pending_text, $pending_echo, $pending_user);
+
+    while (my $line = <$sock>) {
+        print $line;
+
+        if ($line =~ /^>PASSWORD:Need 'Auth' username\/password/) {
+            my $send_user = $username;
+            my $send_pass = $password;
+
+            if (defined $pending_state) {
+                my $otp = prompt($pending_text || 'OTP', $pending_echo ? 0 : 1, undef);
+                $send_user = $pending_user if defined $pending_user && length $pending_user;
+                $send_pass = 'CRV1::' . $pending_state . '::' . $otp;
+                undef $pending_state;
+                undef $pending_text;
+                undef $pending_echo;
+                undef $pending_user;
+            }
+
+            print {$sock} 'username "Auth" ' . mgmt_quote($send_user) . "\n";
+            print {$sock} 'password "Auth" ' . mgmt_quote($send_pass) . "\n";
+            next;
+        }
+
+        if ($line =~ /^>PASSWORD:Verification Failed: 'Auth' \['CRV1:([^:]+):([^:]+):([^:]+):(.*)'\]/) {
+            my ($flags, $state_id, $user_b64, $text) = ($1, $2, $3, $4);
+            my $decoded_user = eval { decode_base64($user_b64) };
+
+            $pending_state = $state_id;
+            $pending_text = $text;
+            $pending_echo = ($flags =~ /E/) ? 1 : 0;
+            $pending_user = defined $decoded_user && length $decoded_user ? $decoded_user : $username;
+
+            print "Challenge received: $pending_text\n";
+            next;
+        }
+
+        if ($line =~ /Initialization Sequence Completed/ || $line =~ /^>STATE:.*CONNECTED,SUCCESS/) {
+            print "VPN connected. Press Ctrl-C to disconnect.\n";
+        }
+    }
+
+    waitpid $pid, 0;
+}
+
+my $command = shift @ARGV // usage();
+
+if ($command eq 'up') {
+    command_up();
+} elsif ($command eq 'down') {
+    command_down();
+} elsif ($command eq 'status') {
+    command_status();
+} else {
+    usage();
+}
