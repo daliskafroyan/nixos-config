@@ -45,11 +45,14 @@ in
     cmatrix
     gh
     git
+    unzip
     networkmanagerapplet
     openvpn
     sops
     ssh-to-age
     xfce.thunar
+    xfce.thunar-archive-plugin
+    xarchiver
     gruvbox-gtk-theme
     gruvbox-dark-icons-gtk
     wl-clipboard
