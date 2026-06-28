@@ -16,6 +16,8 @@
 
   services.xserver.enable = true;
   programs.niri.enable = true;
+  programs.steam.enable = true;
+  programs.xwayland.enable = true;
   services.displayManager.gdm.enable = true;
   services.displayManager.defaultSession = "niri";
   xdg.portal.enable = true;

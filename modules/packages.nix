@@ -56,6 +56,7 @@ in
     gruvbox-gtk-theme
     gruvbox-dark-icons-gtk
     wl-clipboard
+    xwayland-satellite
     chromium
     inputs.helium-browser.packages.${pkgs.stdenv.hostPlatform.system}.helium
     youtube-music

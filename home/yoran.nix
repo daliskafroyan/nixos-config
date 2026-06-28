@@ -1,11 +1,96 @@
-{ lib, pkgs, ... }:
+{ inputs, lib, pkgs, ... }:
 
 {
+  imports = [ inputs.nvf.homeManagerModules.default ];
+
   home.username = "yoran";
   home.homeDirectory = "/home/yoran";
   home.stateVersion = "25.11";
 
   xdg.enable = true;
+  programs.nvf = {
+    enable = true;
+    enableManpages = true;
+    settings.vim = {
+      viAlias = false;
+      vimAlias = true;
+      lineNumberMode = "relNumber";
+      clipboard.enable = true;
+      theme.enable = true;
+      treesitter.enable = true;
+      lsp.enable = true;
+      globals.mapleader = " ";
+      dashboard.alpha.enable = true;
+      binds.whichKey.enable = true;
+      comments.comment-nvim.enable = true;
+      visuals.indent-blankline.enable = true;
+      notify.nvim-notify.enable = true;
+      filetree.neo-tree = {
+        enable = true;
+        setupOpts = {
+          window = {
+            position = "left";
+            width = 32;
+          };
+          filesystem = {
+            follow_current_file.enabled = true;
+            hijack_netrw_behavior = "open_default";
+          };
+        };
+      };
+      fzf-lua.enable = true;
+      autocomplete.blink-cmp.enable = true;
+      autopairs.nvim-autopairs.enable = true;
+      git.gitsigns.enable = true;
+      statusline.lualine.enable = true;
+      tabline.nvimBufferline.enable = true;
+      terminal.toggleterm.enable = true;
+      keymaps = [
+        {
+          mode = "n";
+          key = "<leader>e";
+          action = "<cmd>Neotree filesystem reveal left toggle<CR>";
+          desc = "Explorer";
+        }
+        {
+          mode = "n";
+          key = "<leader>tt";
+          action = "<cmd>ToggleTerm<CR>";
+          desc = "Terminal";
+        }
+        {
+          mode = "n";
+          key = "<leader>ff";
+          action = "<cmd>FzfLua files<CR>";
+          desc = "Find files";
+        }
+        {
+          mode = "n";
+          key = "<leader>fg";
+          action = "<cmd>FzfLua live_grep<CR>";
+          desc = "Live grep";
+        }
+        {
+          mode = "n";
+          key = "<leader>fb";
+          action = "<cmd>FzfLua buffers<CR>";
+          desc = "Buffers";
+        }
+        {
+          mode = "n";
+          key = "<leader>fh";
+          action = "<cmd>FzfLua helptags<CR>";
+          desc = "Help tags";
+        }
+      ];
+      languages.nix = {
+        enable = true;
+        lsp.enable = true;
+        treesitter.enable = true;
+      };
+    };
+  };
+
   programs.bash = {
     enable = true;
     shellAliases = {
@@ -90,9 +175,8 @@
             status = "disable";
           }
           {
-            criteria = "LG Electronics LG FULL HD 0x01010101";
+            criteria = "*";
             status = "enable";
-            mode = "1920x1080";
             scale = 1.0;
             position = "0,0";
           }
