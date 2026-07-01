@@ -586,6 +586,10 @@ binds {
     // Mod+Space       { switch-layout "next"; }
     // Mod+Shift+Space { switch-layout "prev"; }
 
+    // Alternative screenshot shortcuts for keyboards without a Print key.
+    Mod+Shift+S { screenshot; }
+    Mod+Ctrl+Shift+S { screenshot-screen; }
+    Mod+Alt+Shift+S { screenshot-window; }
     Print { screenshot; }
     Ctrl+Print { screenshot-screen; }
     Alt+Print { screenshot-window; }
