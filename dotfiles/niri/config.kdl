@@ -237,6 +237,7 @@ layout {
 // See the binds section below for more spawn examples.
 
 spawn-at-startup "noctalia"
+spawn-sh-at-startup "pkill -x mpvpaper; exec mpvpaper -o 'no-audio loop --panscan=1.0' ALL /home/yoran/Downloads/previewhd.mp4"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
