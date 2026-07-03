@@ -175,8 +175,9 @@
             status = "disable";
           }
           {
-            criteria = "*";
+            criteria = "LG Electronics LG FULL HD 0x01010101";
             status = "enable";
+            mode = "1920x1080";
             scale = 1.0;
             position = "0,0";
           }

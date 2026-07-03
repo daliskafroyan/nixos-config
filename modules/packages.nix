@@ -11,11 +11,11 @@ let
 
   opencode = pkgs.stdenv.mkDerivation {
     pname = "opencode";
-    version = "1.16.2";
+    version = "1.17.7";
 
     src = pkgs.fetchurl {
-      url = "https://registry.npmjs.org/opencode-linux-x64/-/opencode-linux-x64-1.16.2.tgz";
-      hash = "sha512-O+EKhZ0xGrmxP0v1UuW62FbMborzrYnQ3rKy/ulYWfz9TGhUxu7gSWceBcASXx00T6HM94ob8atE8MnfEzZ0Qg==";
+      url = "https://registry.npmjs.org/opencode-linux-x64/-/opencode-linux-x64-1.17.7.tgz";
+      hash = "sha512-UIxkdA/8281EHbHYVr5PSD+eVoMdlyfkmXiZp3u9duttsMHdf1F6lw0XjYmDRBCPp8zQM1D1RLCABuRA/kUX+Q==";
     };
 
     nativeBuildInputs = [
