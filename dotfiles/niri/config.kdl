@@ -236,7 +236,7 @@ layout {
 // which may be more convenient to use.
 // See the binds section below for more spawn examples.
 
-spawn-at-startup "noctalia"
+spawn-sh-at-startup "pkill -x mpvpaper || true; if [ -f \"$HOME/.local/share/wallpapers/current.mp4\" ]; then exec /home/yoran/.local/state/nix/profiles/home-manager/home-path/bin/mpvpaper -o 'no-audio loop' '*' $HOME/.local/share/wallpapers/current.mp4; fi"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
@@ -252,6 +252,10 @@ hotkey-overlay {
 // This option will also fix border/focus ring drawing behind some semitransparent windows.
 // After enabling or disabling this, you need to restart the apps for this to take effect.
 prefer-no-csd
+
+window-rule {
+    opacity 0.90
+}
 
 window-rule {
     match app-id="dev.noctalia.Noctalia.Settings"

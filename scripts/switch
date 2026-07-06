@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+set -eu
+
+repo_dir="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+host="${1:-$(hostname)}"
+
+exec sudo nixos-rebuild switch --flake "path:$repo_dir#$host"

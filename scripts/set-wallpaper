@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+set -eu
+
+name="${1:?usage: set-wallpaper <name>}"
+wallpaper_dir="$HOME/.local/share/wallpapers"
+target_file="$wallpaper_dir/$name.mp4"
+current_file="$wallpaper_dir/current.mp4"
+mpvpaper_bin="$HOME/.local/state/nix/profiles/home-manager/home-path/bin/mpvpaper"
+
+if [ ! -f "$target_file" ]; then
+  printf 'missing wallpaper: %s\n' "$target_file" >&2
+  exit 1
+fi
+
+ln -sfn "$target_file" "$current_file"
+pkill -x mpvpaper || true
+"$mpvpaper_bin" -o 'no-audio loop' '*' "$current_file" >/dev/null 2>&1 &
+
+printf 'active wallpaper -> %s\n' "$target_file"

@@ -23,7 +23,7 @@ alpha = 0.18
 [bar.main]
 position = "top"
 thickness = 28
-background_opacity = 1.0
+background_opacity = 0.9
 radius = 0
 margin_ends = 12
 margin_edge = 12
@@ -35,7 +35,7 @@ capsule_fill = "surface_variant"
 capsule_border = ""
 capsule_radius = 0.0
 capsule_padding = 8.0
-capsule_opacity = 1.0
+capsule_opacity = 0.9
 
 start = ["launcher", "wallpaper", "workspaces"]
 center = []
@@ -46,7 +46,7 @@ id = "signals"
 members = ["network", "bluetooth", "volume", "battery"]
 fill = "surface_variant"
 border = ""
-opacity = 1.0
+opacity = 0.9
 padding = 8.0
 radius = 0.0
 
@@ -55,7 +55,7 @@ id = "actions"
 members = ["clock", "control-center", "session"]
 fill = "surface_variant"
 border = ""
-opacity = 1.0
+opacity = 0.9
 padding = 8.0
 radius = 0.0
 
@@ -68,7 +68,7 @@ id = "signals"
 members = ["network", "bluetooth", "volume", "brightness", "battery"]
 fill = "surface_variant"
 border = ""
-opacity = 1.0
+opacity = 0.9
 padding = 8.0
 radius = 0.0
 
@@ -77,7 +77,7 @@ id = "actions"
 members = ["clock", "control-center", "session"]
 fill = "surface_variant"
 border = ""
-opacity = 1.0
+opacity = 0.9
 padding = 8.0
 radius = 0.0
 
@@ -95,7 +95,7 @@ enable_daemon = true
 enable_ddcutil = false
 
 [wallpaper]
-enabled = true
+enabled = false
 directory_dark = "/home/yoran/Wallpapers/dark"
 directory_light = "/home/yoran/Wallpapers/light"
 fill_mode = "crop"

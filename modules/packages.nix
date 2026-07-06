@@ -40,6 +40,7 @@ let
 in
 {
   environment.systemPackages = with pkgs; [
+    age
     alacritty
     btop
     cmatrix

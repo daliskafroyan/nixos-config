@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+
+set -eu
+
+repo_dir="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+target="/etc/nixos"
+
+if [ "$(id -u)" -ne 0 ]; then
+  exec sudo "$0" "$@"
+fi
+
+if [ -L "$target" ]; then
+  current_target="$(readlink -f "$target")"
+
+  if [ "$current_target" = "$repo_dir" ]; then
+    printf 'already linked: %s -> %s\n' "$target" "$repo_dir"
+    exit 0
+  fi
+fi
+
+if [ -e "$target" ] || [ -L "$target" ]; then
+  backup_path="${target}.backup-$(date +%Y%m%d%H%M%S)"
+  mv "$target" "$backup_path"
+  printf 'backed up existing %s to %s\n' "$target" "$backup_path"
+fi
+
+ln -s "$repo_dir" "$target"
+printf 'linked %s -> %s\n' "$target" "$repo_dir"

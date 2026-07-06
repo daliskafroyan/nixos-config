@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+set -eu
+
+repo_dir="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+source_file="${1:-$HOME/.local/share/wallpapers/1.mp4}"
+wallpaper_name="${2:-1}"
+public_key_file="$HOME/.ssh/id_ed25519_personal.pub"
+target_dir="$repo_dir/assets/wallpapers"
+if [ "$#" -ge 3 ]; then
+  public_key_file="$3"
+fi
+target_file="$target_dir/$wallpaper_name.mp4.age"
+temp_file="$target_file.tmp"
+
+if [ ! -f "$source_file" ]; then
+  printf 'missing source wallpaper: %s\n' "$source_file" >&2
+  exit 1
+fi
+
+if [ ! -f "$public_key_file" ]; then
+  printf 'missing SSH public key: %s\n' "$public_key_file" >&2
+  exit 1
+fi
+
+mkdir -p "$target_dir"
+recipient="$(cat "$public_key_file")"
+age -r "$recipient" -o "$temp_file" "$source_file"
+mv "$temp_file" "$target_file"
+
+printf 'encrypted wallpaper -> %s\n' "$target_file"

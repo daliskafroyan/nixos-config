@@ -22,6 +22,7 @@ let
 in
 {
   fonts.packages = with pkgs; [
+    corefonts
     ioskeleyMono
     ibm-plex
     noto-fonts

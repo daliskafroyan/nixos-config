@@ -1,13 +1,29 @@
-{ inputs, lib, pkgs, ... }:
+{ inputs, lib, pkgs, hostName ? null, ... }:
+
+let
+  encryptedWallpaperDir = ../assets/wallpapers;
+  hostImports =
+    if hostName != null then
+      let
+        hostModulePath = ./yoran/hosts + "/${hostName}.nix";
+      in
+      lib.optional (builtins.pathExists hostModulePath) hostModulePath
+    else
+      [ ];
+in
 
 {
-  imports = [ inputs.nvf.homeManagerModules.default ];
+  imports = [ inputs.nvf.homeManagerModules.default ] ++ hostImports;
 
   home.username = "yoran";
   home.homeDirectory = "/home/yoran";
   home.stateVersion = "25.11";
 
   xdg.enable = true;
+  home.packages = with pkgs; [
+    mpvpaper
+  ];
+
   programs.nvf = {
     enable = true;
     enableManpages = true;
@@ -94,6 +110,7 @@
   programs.bash = {
     enable = true;
     shellAliases = {
+      "sys-switch" = ''"$HOME/system-configuration/scripts/switch"'';
       vpn-up = ''sudo "$HOME/.local/bin/ritase-vpn" up'';
       vpn-down = ''sudo "$HOME/.local/bin/ritase-vpn" down'';
       vpn-status = ''"$HOME/.local/bin/ritase-vpn" status'';
@@ -164,34 +181,20 @@
     "zed/settings.json".source = ../dotfiles/zed/settings.json;
   };
 
-  services.kanshi = {
-    enable = true;
-    settings = [
-      {
-        profile.name = "docked";
-        profile.outputs = [
-          {
-            criteria = "eDP-1";
-            status = "disable";
-          }
-          {
-            criteria = "*";
-            status = "enable";
-            scale = 1.0;
-            position = "0,0";
-          }
-        ];
-      }
-      {
-        profile.name = "undocked";
-        profile.outputs = [
-          {
-            criteria = "eDP-1";
-            status = "enable";
-          }
-        ];
-      }
-    ];
+  systemd.user.services.noctalia = {
+    Unit = {
+      Description = "Noctalia shell";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "niri.service" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStartPre = "${pkgs.bash}/bin/bash -lc 'rm -f \"$XDG_RUNTIME_DIR\"/noctalia-*.lock'";
+      ExecStart = "${inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/noctalia";
+      Restart = "always";
+      RestartSec = 2;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 
   home.activation.alacrittyThemeCurrent = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -201,4 +204,37 @@
         "$HOME/.config/alacritty/theme-current.toml"
     fi
   '';
+
+  home.activation.wallpapers = lib.hm.dag.entryAfter [ "writeBoundary" ] (
+    if builtins.pathExists encryptedWallpaperDir then
+      ''
+        if [ -f "$HOME/.ssh/id_ed25519_personal" ]; then
+          wallpaper_dir="$HOME/.local/share/wallpapers"
+
+          ${pkgs.coreutils}/bin/mkdir -p "$wallpaper_dir"
+
+          for encrypted_file in ${encryptedWallpaperDir}/*.mp4.age; do
+            if [ ! -e "$encrypted_file" ]; then
+              continue
+            fi
+
+            base_name="$(${pkgs.coreutils}/bin/basename "$encrypted_file" .age)"
+            target_file="$wallpaper_dir/$base_name"
+            temp_file="$target_file.tmp"
+
+            ${pkgs.age}/bin/age -d \
+              -i "$HOME/.ssh/id_ed25519_personal" \
+              -o "$temp_file" \
+              "$encrypted_file"
+            ${pkgs.coreutils}/bin/mv "$temp_file" "$target_file"
+          done
+
+          if [ ! -e "$wallpaper_dir/current.mp4" ] && [ -f "$wallpaper_dir/1.mp4" ]; then
+            ${pkgs.coreutils}/bin/ln -sfn "$wallpaper_dir/1.mp4" "$wallpaper_dir/current.mp4"
+          fi
+        fi
+      ''
+    else
+      ""
+  );
 }

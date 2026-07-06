@@ -20,15 +20,24 @@
     zed.url = "github:zed-industries/zed";
   };
 
-  outputs = inputs@{ nixpkgs, home-manager, ... }: {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+  outputs = inputs@{ nixpkgs, home-manager, ... }:
+    let
+      lib = nixpkgs.lib;
       system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
-      modules = [
-        ./hosts/nixos/configuration.nix
-        inputs.sops-nix.nixosModules.sops
-        home-manager.nixosModules.home-manager
-      ];
+      username = "yoran";
+      hostEntries = builtins.readDir ./hosts;
+      hostNames = builtins.filter (name: hostEntries.${name} == "directory" && name != "common") (builtins.attrNames hostEntries);
+      mkHost = hostName: nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs hostName username; };
+        modules = [
+          (./hosts + "/${hostName}")
+          inputs.sops-nix.nixosModules.sops
+          home-manager.nixosModules.home-manager
+        ];
+      };
+    in
+    {
+      nixosConfigurations = lib.genAttrs hostNames mkHost;
     };
-  };
 }

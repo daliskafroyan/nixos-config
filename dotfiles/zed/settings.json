@@ -28,5 +28,12 @@
       "command": "/run/current-system/sw/bin/opencode",
       "args": ["acp"]
     }
+  },
+  "lsp": {
+    "tinymist": {
+      "settings": {
+        "preview.background.enabled": true
+      }
+    }
   }
 }
