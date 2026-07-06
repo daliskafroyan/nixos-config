@@ -66,6 +66,7 @@ in
     vesktop
     dbeaver-bin
     fastfetch
+    claude-code
     nodejs
     opencode
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
