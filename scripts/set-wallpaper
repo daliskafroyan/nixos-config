@@ -15,6 +15,6 @@ fi
 
 ln -sfn "$target_file" "$current_file"
 pkill -x mpvpaper || true
-"$mpvpaper_bin" -o 'no-audio loop' '*' "$current_file" >/dev/null 2>&1 &
+"$mpvpaper_bin" -o 'no-audio loop panscan=1.0' '*' "$current_file" >/dev/null 2>&1 &
 
 printf 'active wallpaper -> %s\n' "$target_file"
