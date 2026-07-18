@@ -116,6 +116,7 @@ in
     alacritty
     btop
     cmatrix
+    gamescope
     gh
     git
     unzip
