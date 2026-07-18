@@ -115,6 +115,7 @@ in
     age
     alacritty
     btop
+    bubblewrap
     cmatrix
     gamescope
     gh
