@@ -9,7 +9,7 @@
 {
   "cli_default_open_behavior": "existing_window",
   "icon_theme": {
-    "mode": "light",
+    "mode": "dark",
     "light": "Zed (Default)",
     "dark": "Zed (Default)"
   },
@@ -19,7 +19,7 @@
   "ui_font_size": 16,
   "buffer_font_size": 15,
   "theme": {
-    "mode": "light",
+    "mode": "dark",
     "light": "Ayu Light",
     "dark": "Ayu Dark"
   },

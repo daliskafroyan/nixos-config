@@ -10,7 +10,7 @@ source = "builtin"
 builtin = "Gruvbox"
 
 [hooks]
-theme_mode_changed = "sh ~/.config/noctalia/scripts/sync-alacritty-theme.sh"
+theme_mode_changed = "sh ~/.config/noctalia/scripts/sync-system-theme.sh"
 
 [shell.panel]
 control_center_placement = "attached"

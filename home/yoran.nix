@@ -11,9 +11,8 @@ let
     else
       [ ];
 in
-
 {
-  imports = [ inputs.nvf.homeManagerModules.default ] ++ hostImports;
+  imports = hostImports;
 
   home.username = "yoran";
   home.homeDirectory = "/home/yoran";
@@ -24,87 +23,21 @@ in
     mpvpaper
   ];
 
-  programs.nvf = {
+  programs.neovim = {
     enable = true;
-    enableManpages = true;
-    settings.vim = {
-      viAlias = false;
-      vimAlias = true;
-      lineNumberMode = "relNumber";
-      clipboard.enable = true;
-      theme.enable = true;
-      treesitter.enable = true;
-      lsp.enable = true;
-      globals.mapleader = " ";
-      dashboard.alpha.enable = true;
-      binds.whichKey.enable = true;
-      comments.comment-nvim.enable = true;
-      visuals.indent-blankline.enable = true;
-      notify.nvim-notify.enable = true;
-      filetree.neo-tree = {
-        enable = true;
-        setupOpts = {
-          window = {
-            position = "left";
-            width = 32;
-          };
-          filesystem = {
-            follow_current_file.enabled = true;
-            hijack_netrw_behavior = "open_default";
-          };
-        };
-      };
-      fzf-lua.enable = true;
-      autocomplete.blink-cmp.enable = true;
-      autopairs.nvim-autopairs.enable = true;
-      git.gitsigns.enable = true;
-      statusline.lualine.enable = true;
-      tabline.nvimBufferline.enable = true;
-      terminal.toggleterm.enable = true;
-      keymaps = [
-        {
-          mode = "n";
-          key = "<leader>e";
-          action = "<cmd>Neotree filesystem reveal left toggle<CR>";
-          desc = "Explorer";
-        }
-        {
-          mode = "n";
-          key = "<leader>tt";
-          action = "<cmd>ToggleTerm<CR>";
-          desc = "Terminal";
-        }
-        {
-          mode = "n";
-          key = "<leader>ff";
-          action = "<cmd>FzfLua files<CR>";
-          desc = "Find files";
-        }
-        {
-          mode = "n";
-          key = "<leader>fg";
-          action = "<cmd>FzfLua live_grep<CR>";
-          desc = "Live grep";
-        }
-        {
-          mode = "n";
-          key = "<leader>fb";
-          action = "<cmd>FzfLua buffers<CR>";
-          desc = "Buffers";
-        }
-        {
-          mode = "n";
-          key = "<leader>fh";
-          action = "<cmd>FzfLua helptags<CR>";
-          desc = "Help tags";
-        }
-      ];
-      languages.nix = {
-        enable = true;
-        lsp.enable = true;
-        treesitter.enable = true;
-      };
-    };
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
+    extraPackages = with pkgs; [
+      clang
+      curl
+      fd
+      git
+      gnutar
+      ripgrep
+      lazygit
+      tree-sitter
+    ];
   };
 
   programs.bash = {
@@ -116,12 +49,44 @@ in
       vpn-status = ''"$HOME/.local/bin/ritase-vpn" status'';
       vpn-up-nm = ''nmcli --ask connection up id "ritase-royan-vpn"'';
       vpn-down-nm = ''nmcli connection down id "ritase-royan-vpn"'';
+      vpn-scolarsia-up = ''sudo "$HOME/.local/bin/scolarsia-vpn" up'';
+      vpn-scolarsia-down = ''sudo "$HOME/.local/bin/scolarsia-vpn" down'';
+      vpn-scolarsia-status = ''"$HOME/.local/bin/scolarsia-vpn" status'';
     };
   };
   home.file = {
     ".local/bin/ritase-vpn" = {
       source = ../dotfiles/noctalia/scripts/ritase-vpn;
       executable = true;
+    };
+    ".local/bin/dbeaver" = {
+      text = ''
+        #!/usr/bin/env bash
+        exec env NO_AT_BRIDGE=1 GTK_THEME=Adwaita:light ${pkgs.dbeaver-bin}/bin/dbeaver "$@"
+      '';
+      executable = true;
+    };
+    ".local/bin/scolarsia-vpn" = {
+      source = ../dotfiles/noctalia/scripts/scolarsia-vpn;
+      executable = true;
+    };
+    ".local/share/applications/dbeaver.desktop" = {
+      text = ''
+        [Desktop Entry]
+        Version=1.0
+        Type=Application
+        Terminal=false
+        Name=dbeaver-ce
+        GenericName=Universal Database Manager
+        Comment=Universal Database Manager and SQL Client.
+        Exec=/home/yoran/.local/bin/dbeaver %U
+        Icon=dbeaver
+        Categories=IDE;Development
+        StartupWMClass=DBeaver
+        StartupNotify=true
+        Keywords=Database;SQL;IDE;JDBC;ODBC;MySQL;PostgreSQL;Oracle;DB2;MariaDB
+        MimeType=application/sql
+      '';
     };
   };
   programs.ssh = {
@@ -168,17 +133,22 @@ in
     "alacritty/alacritty.toml".source = ../dotfiles/alacritty/alacritty.toml;
     "alacritty/theme-dark.toml".source = ../dotfiles/alacritty/theme-dark.toml;
     "alacritty/theme-light.toml".source = ../dotfiles/alacritty/theme-light.toml;
+    "nvim".source = ../dotfiles/nvim;
     "niri/config.kdl".source = ../dotfiles/niri/config.kdl;
     "noctalia/config.toml".source = ../dotfiles/noctalia/config.toml;
     "noctalia/nix-snowflake-colours.svg".source = ../dotfiles/noctalia/nix-snowflake-colours.svg;
     "noctalia/nix-snowflake-white.svg".source = ../dotfiles/noctalia/nix-snowflake-white.svg;
+    "noctalia/scripts/sync-system-theme.sh" = {
+      text = builtins.replaceStrings [ "@glib@" "@gsettings-desktop-schemas@" ] [ "${lib.getBin pkgs.glib}" "${pkgs.gsettings-desktop-schemas}" ] (builtins.readFile ../dotfiles/noctalia/scripts/sync-system-theme.sh);
+      executable = true;
+    };
     "noctalia/scripts/sync-alacritty-theme.sh" = {
       source = ../dotfiles/noctalia/scripts/sync-alacritty-theme.sh;
       executable = true;
     };
     "opencode/opencode.jsonc".source = ../dotfiles/opencode/opencode.jsonc;
     "opencode/skills/grill-me/SKILL.md".source = ../dotfiles/opencode/skills/grill-me/SKILL.md;
-    "zed/settings.json".source = ../dotfiles/zed/settings.json;
+    "zed/settings.template.json".source = ../dotfiles/zed/settings.json;
   };
 
   systemd.user.services.noctalia = {
@@ -204,6 +174,13 @@ in
         "$HOME/.config/alacritty/theme-current.toml"
     fi
   '';
+  home.activation.zedThemeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ -L "$HOME/.config/zed/settings.json" ] || [ ! -e "$HOME/.config/zed/settings.json" ]; then
+      $DRY_RUN_CMD rm -f "$HOME/.config/zed/settings.json"
+      $DRY_RUN_CMD cp "$HOME/.config/zed/settings.template.json" "$HOME/.config/zed/settings.json"
+    fi
+  '';
+
 
   home.activation.wallpapers = lib.hm.dag.entryAfter [ "writeBoundary" ] (
     if builtins.pathExists encryptedWallpaperDir then

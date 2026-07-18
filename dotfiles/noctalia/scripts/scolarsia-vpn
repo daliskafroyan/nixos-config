@@ -1,0 +1,118 @@
+#!/usr/bin/env sh
+
+set -eu
+
+user_home="${HOME:-/home/yoran}"
+if [ "$(id -u)" -eq 0 ] && [ -n "${SUDO_USER:-}" ]; then
+  sudo_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
+  if [ -n "$sudo_home" ]; then
+    user_home="$sudo_home"
+  fi
+fi
+
+config_path="${SCOLARSIA_OVPN_CONFIG:-$user_home/Downloads/scolarsia-new-001.ovpn}"
+if [ -e "$config_path" ]; then
+  config_path="$(readlink -f "$config_path")"
+fi
+
+usage() {
+  printf 'Usage: scolarsia-vpn <up|down|status>\n' >&2
+  exit 1
+}
+
+require_root() {
+  if [ "$(id -u)" -ne 0 ]; then
+    printf 'Run this command with sudo.\n' >&2
+    exit 1
+  fi
+}
+
+require_config() {
+  if [ ! -f "$config_path" ]; then
+    printf 'Missing OpenVPN config: %s\n' "$config_path" >&2
+    exit 1
+  fi
+}
+
+vpn_openvpn_pids() {
+  ps -eo pid=,args= | while IFS= read -r line; do
+    case "$line" in
+      *openvpn*"$config_path"*)
+        pid=${line%% *}
+        printf '%s\n' "${pid#"${pid%%[![:space:]]*}"}"
+        ;;
+    esac
+  done
+}
+
+command_status() {
+  require_config
+
+  pids="$(vpn_openvpn_pids || true)"
+
+  if [ -n "$pids" ]; then
+    printf 'scolarsia-vpn: running (openvpn pid'
+    if [ "$(printf '%s\n' "$pids" | wc -l)" -gt 1 ]; then
+      printf 's'
+    fi
+    printf ' %s)\n' "$(printf '%s' "$pids" | paste -sd ', ' -)"
+  else
+    printf 'scolarsia-vpn: not running\n'
+  fi
+
+  printf 'config: %s\n' "$config_path"
+}
+
+command_down() {
+  require_root
+  require_config
+
+  pids="$(vpn_openvpn_pids || true)"
+
+  if [ -z "$pids" ]; then
+    printf 'scolarsia-vpn: no direct openvpn session running\n'
+    return
+  fi
+
+  printf '%s\n' "$pids" | xargs kill TERM
+  printf 'Stopped scolarsia-vpn openvpn pid'
+  if [ "$(printf '%s\n' "$pids" | wc -l)" -gt 1 ]; then
+    printf 's'
+  fi
+  printf ' %s\n' "$(printf '%s' "$pids" | paste -sd ', ' -)"
+}
+
+command_up() {
+  require_root
+  require_config
+
+  pids="$(vpn_openvpn_pids || true)"
+
+  if [ -n "$pids" ]; then
+    printf 'scolarsia-vpn: already running (openvpn pid'
+    if [ "$(printf '%s\n' "$pids" | wc -l)" -gt 1 ]; then
+      printf 's'
+    fi
+    printf ' %s)\n' "$(printf '%s' "$pids" | paste -sd ', ' -)"
+    exit 0
+  fi
+
+  exec openvpn --config "$config_path" --providers legacy default --verb 3
+}
+
+command="${1:-}"
+
+case "$command" in
+  up)
+    command_up
+    ;;
+  down)
+    command_down
+    ;;
+  status)
+    command_status
+    ;;
+  *)
+    usage
+    ;;
+esac

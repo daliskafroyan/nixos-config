@@ -11,10 +11,6 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nvf = {
-      url = "github:NotAShelf/nvf/v0.8";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     noctalia.url = "github:noctalia-dev/noctalia";
     helium-browser.url = "github:oxcl/nix-flake-helium-browser";
     zed.url = "github:zed-industries/zed";
