@@ -64,6 +64,18 @@ let
     };
   };
 
+  # `wrapType2` exposes the AppImage executable but does not install a
+  # launcher entry, so provide one explicitly for desktop menus.
+  tldrawDesktopEntry = pkgs.makeDesktopItem {
+    name = "tldraw-offline";
+    desktopName = "tldraw";
+    comment = "Offline whiteboard and diagram editor";
+    exec = "tldraw-offline %U";
+    categories = [ "Office" "Graphics" ];
+    terminal = false;
+    startupNotify = true;
+  };
+
   # GTK 3 rejects `border-spacing`; the Gruvbox theme includes it in its
   # dropdown styling, producing a warning every time a GTK 3 application starts.
   gruvboxGtkTheme = pkgs.gruvbox-gtk-theme.overrideAttrs (old: {
@@ -146,6 +158,7 @@ in
     herdrUpstream
     opencode
     tldrawOffline
+    tldrawDesktopEntry
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }
