@@ -176,6 +176,9 @@ sub command_up {
         '--ping', '10',
         '--ping-restart', '60',
         '--push-peer-info',
+        # Keep the normal Wi-Fi default route for internet services such as
+        # Codex, while accepting the VPN's explicit Ritase private routes.
+        '--pull-filter', 'ignore', 'redirect-gateway',
         '--management', $management_socket, 'unix',
         '--management-query-passwords',
         '--verb', '3',

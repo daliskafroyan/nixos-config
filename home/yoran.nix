@@ -66,6 +66,14 @@ in
       '';
       executable = true;
     };
+    ".local/bin/codex-resume" = {
+      text = ''
+        #!/usr/bin/env bash
+        # Resume the most recent Codex conversation for the current project.
+        exec codex resume --last "$@"
+      '';
+      executable = true;
+    };
     ".local/bin/scolarsia-vpn" = {
       source = ../dotfiles/noctalia/scripts/scolarsia-vpn;
       executable = true;
@@ -149,6 +157,21 @@ in
     "opencode/opencode.jsonc".source = ../dotfiles/opencode/opencode.jsonc;
     "opencode/skills/grill-me/SKILL.md".source = ../dotfiles/opencode/skills/grill-me/SKILL.md;
     "zed/settings.template.json".source = ../dotfiles/zed/settings.json;
+    "herdr/config.toml".text = ''
+      onboarding = false
+
+      [ui]
+      agent_panel_sort = "priority"
+
+      [session]
+      # Re-open each supported agent (including Codex) in its exact recorded
+      # conversation when Herdr restores panes after a server or system restart.
+      resume_agents_on_restore = true
+
+      [experimental]
+      # Keep the visible terminal output too, not only Codex's saved transcript.
+      pane_history = true
+    '';
   };
 
   systemd.user.services.noctalia = {
