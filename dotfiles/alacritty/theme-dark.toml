@@ -1,3 +1,4 @@
+# Gruvbox Dark (the single Alacritty theme used by this setup).
 [colors.primary]
 background = "#282828"
 foreground = "#ebdbb2"

@@ -19,6 +19,12 @@ in
   home.stateVersion = "25.11";
 
   xdg.enable = true;
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "x-scheme-handler/paper" = [ "paper-desktop.desktop" ];
+    };
+  };
   home.packages = with pkgs; [
     mpvpaper
   ];
@@ -140,7 +146,6 @@ in
   xdg.configFile = {
     "alacritty/alacritty.toml".source = ../dotfiles/alacritty/alacritty.toml;
     "alacritty/theme-dark.toml".source = ../dotfiles/alacritty/theme-dark.toml;
-    "alacritty/theme-light.toml".source = ../dotfiles/alacritty/theme-light.toml;
     "nvim".source = ../dotfiles/nvim;
     "niri/config.kdl".source = ../dotfiles/niri/config.kdl;
     "noctalia/config.toml".source = ../dotfiles/noctalia/config.toml;
@@ -160,8 +165,15 @@ in
     "herdr/config.toml".text = ''
       onboarding = false
 
+      [theme]
+      name = "gruvbox"
+
       [ui]
       agent_panel_sort = "priority"
+
+      [keys]
+      new_tab = "ctrl+super+n"
+      close_tab = "ctrl+super+q"
 
       [session]
       # Re-open each supported agent (including Codex) in its exact recorded

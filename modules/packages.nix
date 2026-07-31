@@ -44,6 +44,46 @@ let
     '';
   };
 
+  drukBinary = pkgs.stdenvNoCC.mkDerivation {
+    pname = "druk";
+    version = "1.10.0";
+
+    src = pkgs.fetchurl {
+      url = "https://github.com/letstri/druk/releases/download/v1.10.0/druk-linux-x64.tar.gz";
+      hash = "sha256-rTwq1OiSWZdX8/HCKcBk4eWA4TjnBsd5yBr5uO5V6aU=";
+    };
+
+    dontConfigure = true;
+    dontBuild = true;
+
+    sourceRoot = ".";
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm0755 druk "$out/libexec/druk"
+      runHook postInstall
+    '';
+
+    meta = with pkgs.lib; {
+      description = "Terminal code editor with file tree, tabs, search, and git integration";
+      homepage = "https://github.com/letstri/druk";
+      license = licenses.mit;
+      maintainers = [ ];
+      platforms = [ "x86_64-linux" ];
+    };
+  };
+
+  # Druk is a Bun single-file executable: patching its ELF would remove the
+  # embedded editor payload and leave only the Bun runtime.  Run the unmodified
+  # binary in the FHS compatibility environment instead.
+  druk = pkgs.writeShellApplication {
+    name = "druk";
+    runtimeInputs = [ pkgs.steam-run ];
+    text = ''
+      exec steam-run ${drukBinary}/libexec/druk "$@"
+    '';
+  };
+
   tldrawOffline = pkgs.appimageTools.wrapType2 rec {
     pname = "tldraw-offline";
     version = "1.11.0";
@@ -72,6 +112,36 @@ let
     comment = "Offline whiteboard and diagram editor";
     exec = "tldraw-offline %U";
     categories = [ "Office" "Graphics" ];
+    terminal = false;
+    startupNotify = true;
+  };
+
+  paperDesktop = pkgs.appimageTools.wrapType2 rec {
+    pname = "paper-desktop";
+    version = "0.5.2";
+
+    src = pkgs.fetchurl {
+      url = "https://download.paper.design/linux/appImage";
+      hash = "sha256-195ZhaNYUiIk/r/M4zaUZIPvjCQ1oTvCuck+7uV5Zq4=";
+    };
+
+    meta = with pkgs.lib; {
+      description = "Paper Desktop design tool";
+      homepage = "https://paper.design";
+      license = licenses.unfree;
+      maintainers = [ ];
+      platforms = [ "x86_64-linux" ];
+      mainProgram = "paper-desktop";
+    };
+  };
+
+  paperDesktopEntry = pkgs.makeDesktopItem {
+    name = "paper-desktop";
+    desktopName = "Paper";
+    comment = "Paper Desktop design tool";
+    exec = "paper-desktop %U";
+    categories = [ "Graphics" "Development" ];
+    mimeTypes = [ "x-scheme-handler/paper" ];
     terminal = false;
     startupNotify = true;
   };
@@ -156,9 +226,12 @@ in
     nodejs
     codexUpstream
     herdrUpstream
+    druk
     opencode
     tldrawOffline
     tldrawDesktopEntry
+    paperDesktop
+    paperDesktopEntry
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }

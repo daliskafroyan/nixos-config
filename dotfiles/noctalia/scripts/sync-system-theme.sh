@@ -16,7 +16,7 @@ case "$mode" in
     ;;
 esac
 
-NOCTALIA_THEME_MODE="$mode" sh "$HOME/.config/noctalia/scripts/sync-alacritty-theme.sh"
+sh "$HOME/.config/noctalia/scripts/sync-alacritty-theme.sh"
 
 
 schema_dir="$(find "@gsettings-desktop-schemas@" -type f -name gschemas.compiled -printf "%h" -quit)"
