@@ -2,6 +2,7 @@
 import = [
   "~/.config/alacritty/theme-current.toml",
 ]
+ipc_socket = true
 
 [window]
 opacity = 1.0

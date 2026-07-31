@@ -60,6 +60,80 @@ in
       vpn-scolarsia-status = ''"$HOME/.local/bin/scolarsia-vpn" status'';
     };
   };
+
+  programs.starship = {
+    enable = true;
+    settings = {
+      format = "($nix_shell$fill$git_metrics$line_break)$cmd_duration$character";
+      right_format = "$directory$git_branch$git_status$package$python$nodejs$time";
+      add_newline = true;
+      continuation_prompt = "[▸▹ ](dimmed white)";
+
+      fill = {
+        symbol = " ";
+      };
+
+      git_metrics = {
+        disabled = false;
+        format = "([▴$added]($added_style))([▿$deleted]($deleted_style))";
+        added_style = "italic dimmed green";
+        deleted_style = "italic dimmed red";
+      };
+
+      character = {
+        format = "$symbol ";
+        success_symbol = "[◎](bold italic bright-yellow)";
+        error_symbol = "[○](italic purple)";
+      };
+
+      directory = {
+        home_symbol = "⌂";
+        truncation_length = 2;
+        truncation_symbol = "□ ";
+        read_only = " ◈";
+        use_os_path_sep = true;
+        style = "italic blue";
+        format = "[$path]($style)[$read_only]($read_only_style)";
+      };
+
+      git_branch = {
+        format = " [$branch(:$remote_branch)]($style)";
+        symbol = "[△](bold italic bright-blue)";
+        style = "italic bright-blue";
+        truncation_length = 11;
+        ignore_branches = [ "main" "master" ];
+        only_attached = true;
+      };
+
+      git_status = {
+        style = "bold italic bright-blue";
+        format = "([⎪$ahead_behind$staged$modified$untracked$renamed$deleted$conflicted$stashed⎥]($style))";
+        ahead = "[▴│[$count](bold white)│](italic green)";
+        behind = "[▿│[$count](bold white)│](italic red)";
+        modified = "[●◦](italic yellow)";
+        untracked = "[◌◦](italic bright-yellow)";
+        staged = "[▪┤[$count](bold white)│](italic bright-cyan)";
+        deleted = "[✕](italic red)";
+      };
+
+      cmd_duration = {
+        format = "[◄ $duration ](italic white)";
+      };
+
+      time = {
+        disabled = false;
+        format = "[ $time]($style)";
+        time_format = "%R";
+        style = "italic dimmed white";
+      };
+
+      nix_shell = {
+        symbol = "✶";
+        format = "[$symbol nix⎪$state⎪]($style) [$name](italic dimmed white)";
+        style = "bold italic dimmed blue";
+      };
+    };
+  };
   home.file = {
     ".local/bin/ritase-vpn" = {
       source = ../dotfiles/noctalia/scripts/ritase-vpn;

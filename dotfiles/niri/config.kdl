@@ -258,8 +258,11 @@ window-rule {
 }
 
 window-rule {
-    match app-id="Alacritty"
-    opacity 1.0
+    match app-id="^Alacritty$"
+
+    background-effect {
+        blur true
+    }
 }
 
 window-rule {

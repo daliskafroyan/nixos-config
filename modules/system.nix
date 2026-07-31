@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
   nixpkgs.config.allowUnfree = true;
@@ -15,7 +15,10 @@
   };
 
   services.xserver.enable = true;
-  programs.niri.enable = true;
+  programs.niri = {
+    enable = true;
+    package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.niri;
+  };
   programs.steam.enable = true;
   programs.xwayland.enable = true;
   services.displayManager.gdm.enable = true;
