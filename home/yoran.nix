@@ -27,6 +27,7 @@ in
   };
   home.packages = with pkgs; [
     mpvpaper
+    lazygit
   ];
 
   programs.neovim = {
@@ -41,8 +42,38 @@ in
       git
       gnutar
       ripgrep
-      lazygit
       tree-sitter
+    ];
+  };
+
+  programs.helix = {
+    enable = true;
+    settings = {
+      theme = "gruvbox";
+      editor = {
+        mouse = true;
+        cursorline = true;
+        bufferline = "multiple";
+        color-modes = true;
+        true-color = true;
+
+        cursor-shape = {
+          normal = "block";
+          insert = "bar";
+          select = "underline";
+        };
+
+        indent-guides = {
+          render = true;
+        };
+
+        soft-wrap = {
+          enable = true;
+        };
+      };
+    };
+    extraPackages = with pkgs; [
+      nil
     ];
   };
 
