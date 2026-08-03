@@ -215,6 +215,7 @@ in
     wl-clipboard
     xwayland-satellite
     chromium
+    gnome-disk-utility
     inputs.helium-browser.packages.${pkgs.stdenv.hostPlatform.system}.helium
     youtube-music
     inputs.zed.packages.${pkgs.stdenv.hostPlatform.system}.default

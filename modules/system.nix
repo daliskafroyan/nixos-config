@@ -24,6 +24,7 @@
   services.displayManager.gdm.enable = true;
   services.displayManager.defaultSession = "niri";
   xdg.portal.enable = true;
+  security.polkit.enable = true;
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -36,6 +37,7 @@
   zramSwap.enable = true;
   services.power-profiles-daemon.enable = true;
   services.upower.enable = true;
+  services.udisks2.enable = true;
 
   time.timeZone = "Asia/Jakarta";
   i18n.defaultLocale = "en_US.UTF-8";
@@ -48,7 +50,7 @@
   users.users.yoran = {
     isNormalUser = true;
     description = "yoran";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "disk" ];
     packages = with pkgs; [ ];
   };
 

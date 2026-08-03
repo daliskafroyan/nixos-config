@@ -26,8 +26,10 @@ in
     };
   };
   home.packages = with pkgs; [
+
     mpvpaper
     lazygit
+    lxqt.lxqt-policykit
   ];
 
   programs.neovim = {
@@ -251,7 +253,6 @@ in
   xdg.configFile = {
     "alacritty/alacritty.toml".source = ../dotfiles/alacritty/alacritty.toml;
     "alacritty/theme-dark.toml".source = ../dotfiles/alacritty/theme-dark.toml;
-    "nvim".source = ../dotfiles/nvim;
     "niri/config.kdl".source = ../dotfiles/niri/config.kdl;
     "noctalia/config.toml".source = ../dotfiles/noctalia/config.toml;
     "noctalia/nix-snowflake-colours.svg".source = ../dotfiles/noctalia/nix-snowflake-colours.svg;
@@ -303,6 +304,20 @@ in
       ExecStart = "${inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/noctalia";
       Restart = "always";
       RestartSec = 2;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
+  systemd.user.services.lxqt-policykit-agent = {
+    Unit = {
+      Description = "PolicyKit authentication agent";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.lxqt.lxqt-policykit}/bin/lxqt-policykit-agent";
+      Restart = "on-failure";
     };
     Install.WantedBy = [ "graphical-session.target" ];
   };
