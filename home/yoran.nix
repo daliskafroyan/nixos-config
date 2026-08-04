@@ -12,7 +12,7 @@ let
       [ ];
 in
 {
-  imports = hostImports;
+  imports = hostImports ++ [ inputs.nvf.homeManagerModules.default ];
 
   home.username = "yoran";
   home.homeDirectory = "/home/yoran";
@@ -32,20 +32,56 @@ in
     lxqt.lxqt-policykit
   ];
 
-  programs.neovim = {
+  programs.nvf = {
     enable = true;
-    defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
-    extraPackages = with pkgs; [
-      clang
-      curl
-      fd
-      git
-      gnutar
-      ripgrep
-      tree-sitter
-    ];
+    settings.vim = {
+      viAlias = true;
+      vimAlias = true;
+      opts = {
+        number = true;
+        relativenumber = true;
+      };
+      theme = {
+        enable = true;
+        name = "gruvbox";
+        style = "dark";
+      };
+      visuals.nvim-web-devicons.enable = true;
+      filetree.nvimTree = {
+        enable = true;
+        setupOpts = {
+          update_focused_file.enable = true;
+          git.enable = true;
+        };
+      };
+      terminal.toggleterm = {
+        enable = true;
+        lazygit = {
+          enable = true;
+          direction = "float";
+        };
+      };
+      # nvf currently requires every legacy keymap group to be explicitly
+      # initialized, even when no mappings are configured.
+      maps = lib.genAttrs [
+        "normal"
+        "insert"
+        "select"
+        "visual"
+        "terminal"
+        "normalVisualOp"
+        "visualOnly"
+        "operator"
+        "insertCommand"
+        "lang"
+        "command"
+      ] (_: { });
+    };
+  };
+
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
   };
 
   programs.helix = {
