@@ -196,6 +196,7 @@ in
   environment.systemPackages = with pkgs; [
     age
     alacritty
+    authenticator
     btop
     bubblewrap
     cmatrix
@@ -222,6 +223,7 @@ in
     obsidianUpstream
     vesktop
     dbeaver-bin
+    mongodb-compass
     fastfetch
     claude-code
     nodejs
@@ -229,10 +231,12 @@ in
     herdrUpstream
     druk
     opencode
+    obs-studio
     tldrawOffline
     tldrawDesktopEntry
     paperDesktop
     paperDesktopEntry
+    pavucontrol
     inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }

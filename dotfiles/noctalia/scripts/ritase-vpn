@@ -4,12 +4,13 @@ use warnings;
 
 use IO::Socket::UNIX;
 use MIME::Base64 qw(decode_base64);
-use Socket qw(SOCK_STREAM);
+use Socket qw(SOCK_STREAM inet_ntoa);
 
 my $profile_name      = 'ritase-royan-vpn';
 my $remote_host       = '13.250.155.188';
 my $remote_port       = '17671';
 my $default_username  = 'nil';
+my $staging_db_host   = 'dev-ritase.c4vzbhmvfbwg.ap-southeast-1.rds.amazonaws.com';
 my $management_socket = "/tmp/ritase-vpn-$$.sock";
 
 my $ca_path = '/home/yoran/.local/share/networkmanagement/certificates/nm-openvpn/ritase-royan-vpn-ca.pem';
@@ -60,6 +61,13 @@ sub mgmt_quote {
     $value =~ s/\\/\\\\/g;
     $value =~ s/"/\\"/g;
     return qq{"$value"};
+}
+
+sub resolve_ipv4 {
+    my ($host) = @_;
+    my @result = gethostbyname($host);
+    die "Could not resolve staging database host $host\n" unless @result && defined $result[4];
+    return inet_ntoa($result[4]);
 }
 
 sub vpn_openvpn_pids {
@@ -141,6 +149,10 @@ sub command_down {
 sub command_up {
     require_root();
 
+    # AWS can change an RDS endpoint's public IP. Resolve it at connection
+    # time so the narrow route follows the endpoint rather than a stale IP.
+    my $staging_db_ip = resolve_ipv4($staging_db_host);
+
     my @existing_pids = vpn_openvpn_pids();
     if (@existing_pids) {
         print "ritase-vpn: already running (openvpn pid" . (@existing_pids > 1 ? 's' : '') . ' ' . join(', ', @existing_pids) . ")\n";
@@ -179,6 +191,10 @@ sub command_up {
         # Keep the normal Wi-Fi default route for internet services such as
         # Codex, while accepting the VPN's explicit Ritase private routes.
         '--pull-filter', 'ignore', 'redirect-gateway',
+        # The staging RDS endpoint is publicly addressed, but is reachable
+        # only from the company network. Route precisely this address through
+        # the VPN without turning the session into a full tunnel.
+        '--route', $staging_db_ip, '255.255.255.255',
         '--management', $management_socket, 'unix',
         '--management-query-passwords',
         '--verb', '3',

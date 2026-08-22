@@ -33,11 +33,23 @@
   networking.networkmanager.plugins = with pkgs; [
     networkmanager-openvpn
   ];
+  # Private access to gaikiken and its Jellyfin instance from any network.
+  services.tailscale.enable = true;
+  services.syncthing = {
+    enable = true;
+    user = "yoran";
+    dataDir = "/home/yoran/Documents";
+    configDir = "/home/yoran/.config/syncthing";
+    guiAddress = "127.0.0.1:8384";
+    openDefaultPorts = true;
+  };
   hardware.bluetooth.enable = true;
   zramSwap.enable = true;
   services.power-profiles-daemon.enable = true;
   services.upower.enable = true;
   services.udisks2.enable = true;
+  # Gives Thunar the GVFS D-Bus/GIO backends needed for SFTP locations.
+  services.gvfs.enable = true;
 
   time.timeZone = "Asia/Jakarta";
   i18n.defaultLocale = "en_US.UTF-8";

@@ -23,13 +23,26 @@ in
     enable = true;
     defaultApplications = {
       "x-scheme-handler/paper" = [ "paper-desktop.desktop" ];
+      "image/avif" = [ "org.gnome.Loupe.desktop" ];
+      "image/bmp" = [ "org.gnome.Loupe.desktop" ];
+      "image/gif" = [ "org.gnome.Loupe.desktop" ];
+      "image/heic" = [ "org.gnome.Loupe.desktop" ];
+      "image/heif" = [ "org.gnome.Loupe.desktop" ];
+      "image/jpeg" = [ "org.gnome.Loupe.desktop" ];
+      "image/png" = [ "org.gnome.Loupe.desktop" ];
+      "image/svg+xml" = [ "org.gnome.Loupe.desktop" ];
+      "image/tiff" = [ "org.gnome.Loupe.desktop" ];
+      "image/webp" = [ "org.gnome.Loupe.desktop" ];
     };
   };
   home.packages = with pkgs; [
 
     mpvpaper
-    lazygit
+    gitui
+    loupe
     lxqt.lxqt-policykit
+    xfce.thunar-volman
+    xfce.tumbler
   ];
 
   programs.nvf = {
@@ -56,10 +69,32 @@ in
       };
       terminal.toggleterm = {
         enable = true;
-        lazygit = {
-          enable = true;
-          direction = "float";
-        };
+      };
+      lazy.plugins.toggleterm-nvim = {
+        keys = [
+          {
+            key = "<leader>gg";
+            mode = "n";
+            desc = "Open GitUI";
+          }
+        ];
+        after = ''
+          local terminal = require 'toggleterm.terminal'
+          local gitui = terminal.Terminal:new({
+            cmd = '${lib.getExe pkgs.gitui}',
+            direction = 'float',
+            hidden = true,
+            on_open = function(term)
+              vim.cmd('startinsert!')
+            end,
+          })
+
+          vim.keymap.set('n', '<leader>gg', function() gitui:toggle() end, {
+            silent = true,
+            noremap = true,
+            desc = 'Open GitUI',
+          })
+        '';
       };
       # nvf currently requires every legacy keymap group to be explicitly
       # initialized, even when no mappings are configured.
@@ -132,76 +167,196 @@ in
 
   programs.starship = {
     enable = true;
-    settings = {
-      format = "($nix_shell$fill$git_metrics$line_break)$cmd_duration$character";
-      right_format = "$directory$git_branch$git_status$package$python$nodejs$time";
-      add_newline = true;
-      continuation_prompt = "[▸▹ ](dimmed white)";
+    /* Previous inline preset retained temporarily for reference.
+    settings = builtins.fromTOML ''
+      format = """
+      [](color_orange)\
+      $os\
+      $username\
+      [](bg:color_yellow fg:color_orange)\
+      $directory\
+      [](fg:color_yellow bg:color_aqua)\
+      $git_branch\
+      $git_status\
+      [](fg:color_aqua bg:color_blue)\
+      $c\
+      $cpp\
+      $rust\
+      $golang\
+      $nodejs\
+      $bun\
+      $php\
+      $java\
+      $kotlin\
+      $haskell\
+      $python\
+      [](fg:color_blue bg:color_bg3)\
+      $docker_context\
+      $conda\
+      $pixi\
+      [](fg:color_bg3 bg:color_bg1)\
+      $time\
+      [ ](fg:color_bg1)\
+      $line_break$character"""
 
-      fill = {
-        symbol = " ";
-      };
+      palette = 'gruvbox_dark'
 
-      git_metrics = {
-        disabled = false;
-        format = "([▴$added]($added_style))([▿$deleted]($deleted_style))";
-        added_style = "italic dimmed green";
-        deleted_style = "italic dimmed red";
-      };
+      [palettes.gruvbox_dark]
+      color_fg0 = '#fbf1c7'
+      color_bg1 = '#3c3836'
+      color_bg3 = '#665c54'
+      color_blue = '#458588'
+      color_aqua = '#689d6a'
+      color_green = '#98971a'
+      color_orange = '#d65d0e'
+      color_purple = '#b16286'
+      color_red = '#cc241d'
+      color_yellow = '#d79921'
 
-      character = {
-        format = "$symbol ";
-        success_symbol = "[◎](bold italic bright-yellow)";
-        error_symbol = "[○](italic purple)";
-      };
+      [os]
+      disabled = false
+      style = "bg:color_orange fg:color_fg0"
 
-      directory = {
-        home_symbol = "⌂";
-        truncation_length = 2;
-        truncation_symbol = "□ ";
-        read_only = " ◈";
-        use_os_path_sep = true;
-        style = "italic blue";
-        format = "[$path]($style)[$read_only]($read_only_style)";
-      };
+      [os.symbols]
+      Windows = "󰍲"
+      Ubuntu = "󰕈"
+      SUSE = ""
+      Raspbian = "󰐿"
+      Mint = "󰣭"
+      Macos = "󰀵"
+      Manjaro = ""
+      Linux = "󰌽"
+      Gentoo = "󰣨"
+      Fedora = "󰣛"
+      Alpine = ""
+      Amazon = ""
+      Android = ""
+      AOSC = ""
+      Arch = "󰣇"
+      Artix = "󰣇"
+      EndeavourOS = ""
+      CentOS = ""
+      Debian = "󰣚"
+      Redhat = "󱄛"
+      RedHatEnterprise = "󱄛"
+      Pop = ""
 
-      git_branch = {
-        format = " [$branch(:$remote_branch)]($style)";
-        symbol = "[△](bold italic bright-blue)";
-        style = "italic bright-blue";
-        truncation_length = 11;
-        ignore_branches = [ "main" "master" ];
-        only_attached = true;
-      };
+      [username]
+      show_always = true
+      style_user = "bg:color_orange fg:color_fg0"
+      style_root = "bg:color_orange fg:color_fg0"
+      format = '[ $user ]($style)'
 
-      git_status = {
-        style = "bold italic bright-blue";
-        format = "([⎪$ahead_behind$staged$modified$untracked$renamed$deleted$conflicted$stashed⎥]($style))";
-        ahead = "[▴│[$count](bold white)│](italic green)";
-        behind = "[▿│[$count](bold white)│](italic red)";
-        modified = "[●◦](italic yellow)";
-        untracked = "[◌◦](italic bright-yellow)";
-        staged = "[▪┤[$count](bold white)│](italic bright-cyan)";
-        deleted = "[✕](italic red)";
-      };
+      [directory]
+      style = "fg:color_fg0 bg:color_yellow"
+      format = "[ $path ]($style)"
+      truncation_length = 3
+      truncation_symbol = "…/"
 
-      cmd_duration = {
-        format = "[◄ $duration ](italic white)";
-      };
+      [directory.substitutions]
+      "Documents" = "󰈙 "
+      "Downloads" = " "
+      "Music" = "󰝚 "
+      "Pictures" = " "
+      "Developer" = "󰲋 "
 
-      time = {
-        disabled = false;
-        format = "[ $time]($style)";
-        time_format = "%R";
-        style = "italic dimmed white";
-      };
+      [git_branch]
+      symbol = ""
+      style = "bg:color_aqua"
+      format = '[[ $symbol $branch ](fg:color_fg0 bg:color_aqua)]($style)'
 
-      nix_shell = {
-        symbol = "✶";
-        format = "[$symbol nix⎪$state⎪]($style) [$name](italic dimmed white)";
-        style = "bold italic dimmed blue";
-      };
-    };
+      [git_status]
+      style = "bg:color_aqua"
+      format = '[[($all_status$ahead_behind )](fg:color_fg0 bg:color_aqua)]($style)'
+
+      [nodejs]
+      symbol = ""
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [bun]
+      symbol = ""
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [c]
+      symbol = " "
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [cpp]
+      symbol = " "
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [rust]
+      symbol = ""
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [golang]
+      symbol = ""
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [php]
+      symbol = ""
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [java]
+      symbol = ""
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [kotlin]
+      symbol = ""
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [haskell]
+      symbol = ""
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [python]
+      symbol = ""
+      style = "bg:color_blue"
+      format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
+
+      [docker_context]
+      symbol = ""
+      style = "bg:color_bg3"
+      format = '[[ $symbol( $context) ](fg:#83a598 bg:color_bg3)]($style)'
+
+      [conda]
+      style = "bg:color_bg3"
+      format = '[[ $symbol( $environment) ](fg:#83a598 bg:color_bg3)]($style)'
+
+      [pixi]
+      style = "bg:color_bg3"
+      format = '[[ $symbol( $version)( $environment) ](fg:color_fg0 bg:color_bg3)]($style)'
+
+      [time]
+      disabled = false
+      time_format = "%R"
+      style = "bg:color_bg1"
+      format = '[[  $time ](fg:color_fg0 bg:color_bg1)]($style)'
+
+      [line_break]
+      disabled = false
+
+      [character]
+      disabled = false
+      success_symbol = '[](bold fg:color_green)'
+      error_symbol = '[](bold fg:color_red)'
+      vimcmd_symbol = '[](bold fg:color_green)'
+      vimcmd_replace_one_symbol = '[](bold fg:color_purple)'
+      vimcmd_replace_symbol = '[](bold fg:color_purple)'
+      vimcmd_visual_symbol = '[](bold fg:color_yellow)'
+    '';
+    */
+    settings = builtins.fromTOML (builtins.readFile ../dotfiles/starship.toml);
   };
   home.file = {
     ".local/bin/ritase-vpn" = {
@@ -283,6 +438,14 @@ in
         identityFile = [ "~/.ssh/lambda-prod" ];
         identitiesOnly = true;
       };
+
+      gaikiken = {
+        # Tailscale stays reachable when the server moves to another network.
+        hostname = "100.124.68.74";
+        user = "yoran";
+        identityFile = [ "~/.ssh/id_ed25519_gaikiken" ];
+        identitiesOnly = true;
+      };
     };
   };
 
@@ -314,8 +477,23 @@ in
       agent_panel_sort = "priority"
 
       [keys]
-      new_tab = "ctrl+super+n"
-      close_tab = "ctrl+super+q"
+      prefix = "ctrl+b"
+      new_tab = ["prefix+c", "ctrl+alt+n"]
+      close_tab = ["prefix+shift+x", "ctrl+alt+q"]
+      rename_tab = ["prefix+shift+t", "ctrl+alt+r"]
+      close_workspace = ["prefix+shift+d", "ctrl+alt+shift+q"]
+      workspace_picker = ["prefix+w", "ctrl+alt+w"]
+      previous_tab = ["prefix+p", "ctrl+alt+["]
+      next_tab = ["prefix+n", "ctrl+alt+]"]
+      focus_pane_left = ["prefix+h", "ctrl+alt+h"]
+      focus_pane_down = ["prefix+j", "ctrl+alt+j"]
+      focus_pane_up = ["prefix+k", "ctrl+alt+k"]
+      focus_pane_right = ["prefix+l", "ctrl+alt+l"]
+      split_vertical = ["prefix+v", "ctrl+alt+d"]
+      split_horizontal = ["prefix+minus", "ctrl+alt+shift+d"]
+      zoom = ["prefix+z", "ctrl+alt+z"]
+      toggle_sidebar = ["prefix+b", "ctrl+alt+b"]
+      close_pane = ["prefix+x", "ctrl+alt+x"]
 
       [session]
       # Re-open each supported agent (including Codex) in its exact recorded

@@ -23,6 +23,7 @@
           {
             criteria = "eDP-1";
             status = "enable";
+            mode = "2880x1800@120Hz";
           }
         ];
       }
