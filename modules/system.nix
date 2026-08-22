@@ -17,7 +17,7 @@
   services.xserver.enable = true;
   programs.niri = {
     enable = true;
-    package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.niri;
+    package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.niri;
   };
   programs.steam.enable = true;
   programs.xwayland.enable = true;

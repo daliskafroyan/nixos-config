@@ -30,9 +30,9 @@
       hostEntries = builtins.readDir ./hosts;
       hostNames = builtins.filter (name: hostEntries.${name} == "directory" && name != "common") (builtins.attrNames hostEntries);
       mkHost = hostName: nixpkgs.lib.nixosSystem {
-        inherit system;
         specialArgs = { inherit inputs hostName username; };
         modules = [
+          { nixpkgs.hostPlatform = system; }
           (./hosts + "/${hostName}")
           inputs.sops-nix.nixosModules.sops
           home-manager.nixosModules.home-manager
