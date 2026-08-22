@@ -15,6 +15,7 @@
     noctalia.url = "github:noctalia-dev/noctalia";
     helium-browser.url = "github:oxcl/nix-flake-helium-browser";
     zed.url = "github:zed-industries/zed";
+    omp.url = "github:can1357/oh-my-pi";
     nvf = {
       url = "github:NotAShelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -231,6 +231,7 @@ in
     herdrUpstream
     druk
     opencode
+    inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.omp
     obs-studio
     tldrawOffline
     tldrawDesktopEntry

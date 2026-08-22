@@ -27,6 +27,10 @@
     "OpenCode": {
       "command": "/run/current-system/sw/bin/opencode",
       "args": ["acp"]
+    },
+    "Oh My Pi": {
+      "command": "/run/current-system/sw/bin/omp",
+      "args": ["acp"]
     }
   },
   "lsp": {
