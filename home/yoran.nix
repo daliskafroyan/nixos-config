@@ -154,6 +154,7 @@ in
     enable = true;
     shellAliases = {
       "sys-switch" = ''"$HOME/system-configuration/scripts/switch"'';
+      "ticket-worktree" = ''"$HOME/system-configuration/scripts/ticket-worktree"'';
       vpn-up = ''sudo "$HOME/.local/bin/ritase-vpn" up'';
       vpn-down = ''sudo "$HOME/.local/bin/ritase-vpn" down'';
       vpn-status = ''"$HOME/.local/bin/ritase-vpn" status'';
@@ -464,8 +465,7 @@ in
   };
 
   xdg.configFile = {
-    "alacritty/alacritty.toml".source = ../dotfiles/alacritty/alacritty.toml;
-    "alacritty/theme-dark.toml".source = ../dotfiles/alacritty/theme-dark.toml;
+    "ghostty/config".source = ../dotfiles/ghostty/config;
     "niri/config.kdl".source = ../dotfiles/niri/config.kdl;
     "noctalia/config.toml".source = ../dotfiles/noctalia/config.toml;
     "noctalia/nix-snowflake-colours.svg".source = ../dotfiles/noctalia/nix-snowflake-colours.svg;
@@ -474,10 +474,7 @@ in
       text = builtins.replaceStrings [ "@glib@" "@gsettings-desktop-schemas@" ] [ "${lib.getBin pkgs.glib}" "${pkgs.gsettings-desktop-schemas}" ] (builtins.readFile ../dotfiles/noctalia/scripts/sync-system-theme.sh);
       executable = true;
     };
-    "noctalia/scripts/sync-alacritty-theme.sh" = {
-      source = ../dotfiles/noctalia/scripts/sync-alacritty-theme.sh;
-      executable = true;
-    };
+
     "opencode/opencode.jsonc".source = ../dotfiles/opencode/opencode.jsonc;
     "opencode/skills/grill-me/SKILL.md".source = ../dotfiles/opencode/skills/grill-me/SKILL.md;
     "zed/settings.template.json".source = ../dotfiles/zed/settings.json;
@@ -550,13 +547,7 @@ in
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  home.activation.alacrittyThemeCurrent = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if [ ! -e "$HOME/.config/alacritty/theme-current.toml" ]; then
-      ${pkgs.coreutils}/bin/install -m 0644 \
-        "$HOME/.config/alacritty/theme-dark.toml" \
-        "$HOME/.config/alacritty/theme-current.toml"
-    fi
-  '';
+
   home.activation.zedThemeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ -L "$HOME/.config/zed/settings.json" ] || [ ! -e "$HOME/.config/zed/settings.json" ]; then
       $DRY_RUN_CMD rm -f "$HOME/.config/zed/settings.json"

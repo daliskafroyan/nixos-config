@@ -16,8 +16,6 @@ case "$mode" in
     ;;
 esac
 
-sh "$HOME/.config/noctalia/scripts/sync-alacritty-theme.sh"
-
 
 schema_dir="$(find "@gsettings-desktop-schemas@" -type f -name gschemas.compiled -printf "%h" -quit)"
 GSETTINGS_SCHEMA_DIR="$schema_dir" "@glib@/bin/gsettings" set org.gnome.desktop.interface color-scheme "$scheme"

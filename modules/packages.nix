@@ -195,7 +195,7 @@ in
 {
   environment.systemPackages = with pkgs; [
     age
-    alacritty
+    ghostty
     authenticator
     btop
     bubblewrap
@@ -225,13 +225,15 @@ in
     dbeaver-bin
     mongodb-compass
     fastfetch
-    claude-code
     nodejs
     codexUpstream
     herdrUpstream
     druk
     opencode
     inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.omp
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.aven
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.agentsview
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.gno
     obs-studio
     tldrawOffline
     tldrawDesktopEntry
