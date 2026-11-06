@@ -113,6 +113,10 @@ in
     shellAliases = {
       "sys-switch" = ''"$HOME/system-configuration/scripts/switch"'';
       "ticket-worktree" = ''"$HOME/system-configuration/scripts/ticket-worktree"'';
+      tunnel-up = "systemctl --user start cloudflared-quick-tunnel";
+      tunnel-down = "systemctl --user stop cloudflared-quick-tunnel";
+      tunnel-status = "systemctl --user status cloudflared-quick-tunnel --no-pager";
+      tunnel-url = "journalctl --user -u cloudflared-quick-tunnel --no-pager -n 100 | grep -oE 'https://[-a-z0-9]+\\.trycloudflare\\.com' | tail -n 1";
       vpn-up = ''sudo "$HOME/.local/bin/ritase-vpn" up'';
       vpn-down = ''sudo "$HOME/.local/bin/ritase-vpn" down'';
       vpn-status = ''"$HOME/.local/bin/ritase-vpn" status'';
@@ -445,6 +449,18 @@ in
     };
 
     "zed/settings.template.json".source = ../dotfiles/zed/settings.json;
+  };
+
+  systemd.user.services.cloudflared-quick-tunnel = {
+    Unit = {
+      Description = "Manual Cloudflare Quick Tunnel for localhost:3001";
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.cloudflared}/bin/cloudflared tunnel --no-autoupdate --url http://127.0.0.1:3001";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
   };
 
   systemd.user.services.noctalia = {

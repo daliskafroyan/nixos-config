@@ -216,6 +216,7 @@ in
     authenticator
     btop
     bubblewrap
+    cloudflared
     cmatrix
     gamescope
     gh
