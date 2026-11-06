@@ -371,6 +371,21 @@ in
       '';
       executable = true;
     };
+    ".local/bin/claude-usage" = {
+      executable = true;
+      text =
+        let
+          system = pkgs.stdenv.hostPlatform.system;
+          claudeAgentAcp = inputs.llm-agents.packages.${system}.claude-agent-acp;
+          claudeCode = inputs.claude-code.packages.${system}.default;
+        in
+        ''
+          #!/usr/bin/env bash
+          exec ${pkgs.nodejs}/bin/node ${../dotfiles/noctalia/scripts/claude-usage.mjs} \
+            ${claudeAgentAcp}/lib/node_modules/@agentclientprotocol/claude-agent-acp/node_modules/@anthropic-ai/claude-agent-sdk/sdk.mjs \
+            ${claudeCode}/bin/claude
+        '';
+    };
     ".local/bin/scolarsia-vpn" = {
       source = ../dotfiles/noctalia/scripts/scolarsia-vpn;
       executable = true;
@@ -462,6 +477,7 @@ in
     "noctalia/config.toml".source = ../dotfiles/noctalia/config.toml;
     "noctalia/nix-snowflake-colours.svg".source = ../dotfiles/noctalia/nix-snowflake-colours.svg;
     "noctalia/nix-snowflake-white.svg".source = ../dotfiles/noctalia/nix-snowflake-white.svg;
+    "noctalia/scripts/claude-usage.lua".source = ../dotfiles/noctalia/scripts/claude-usage.lua;
     "noctalia/scripts/sync-system-theme.sh" = {
       text = builtins.replaceStrings [ "@glib@" "@gsettings-desktop-schemas@" ] [ "${lib.getBin pkgs.glib}" "${pkgs.gsettings-desktop-schemas}" ] (builtins.readFile ../dotfiles/noctalia/scripts/sync-system-theme.sh);
       executable = true;

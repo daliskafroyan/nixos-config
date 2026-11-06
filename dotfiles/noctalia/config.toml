@@ -39,7 +39,7 @@ capsule_opacity = 0.9
 
 start = ["launcher", "wallpaper", "workspaces"]
 center = []
-end = ["media", "tray", "notifications", "clipboard", "network", "volume", "battery", "weather", "clock", "control-center", "session"]
+end = ["media", "tray", "notifications", "clipboard", "network", "volume", "battery", "weather", "claude-usage", "clock", "control-center", "session"]
 
 [[bar.main.capsule_group]]
 id = "signals"
@@ -61,7 +61,7 @@ radius = 0.0
 
 [bar.main.monitor.laptop]
 match = "eDP-1"
-end = ["media", "tray", "notifications", "clipboard", "network", "volume", "brightness", "battery", "clock", "control-center", "session"]
+end = ["media", "tray", "notifications", "clipboard", "network", "volume", "brightness", "battery", "claude-usage", "clock", "control-center", "session"]
 
 [[bar.main.monitor.laptop.capsule_group]]
 id = "signals"
@@ -80,6 +80,12 @@ border = ""
 opacity = 0.9
 padding = 8.0
 radius = 0.0
+
+[widget.claude-usage]
+type = "scripted"
+script = "~/.config/noctalia/scripts/claude-usage.lua"
+command = "~/.local/bin/claude-usage"
+interval_minutes = "5"
 
 [widget.clock]
 format = "{:%d/%m %H:%M}"
