@@ -54,6 +54,22 @@
   };
   hardware.bluetooth.enable = true;
   zramSwap.enable = true;
+
+  # Kill the largest eligible workload before the kernel OOM killer destabilizes
+  # the graphical session. Do not run systemd-oomd alongside earlyoom.
+  systemd.oomd.enable = false;
+  services.earlyoom = {
+    enable = true;
+    freeMemThreshold = 8;
+    freeSwapThreshold = 15;
+    reportInterval = 300;
+    extraArgs = [
+      # Niri resets OOMScoreAdjust after startup, so use earlyoom's own
+      # supported candidate filter to preserve the compositor.
+      "--avoid"
+      "^niri$"
+    ];
+  };
   services.power-profiles-daemon.enable = true;
   services.upower.enable = true;
   services.udisks2.enable = true;
