@@ -259,6 +259,7 @@ window-rule {
 
 window-rule {
     match app-id="^com\\.mitchellh\\.ghostty$"
+    opacity 1.0
 
     background-effect {
         blur true
@@ -270,6 +271,13 @@ window-rule {
     open-floating true
     default-column-width { fixed 1080; }
     default-window-height { fixed 920; }
+}
+
+window-rule {
+    match app-id="^steam_app_"
+    open-fullscreen true
+    open-floating false
+    opacity 1.0
 }
 
 debug {
