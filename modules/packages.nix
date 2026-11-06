@@ -229,6 +229,7 @@ in
     codexUpstream
     herdrUpstream
     druk
+    inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
     opencode
     inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.omp
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.aven

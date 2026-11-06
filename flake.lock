@@ -495,6 +495,26 @@
         "type": "github"
       }
     },
+    "openspec": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790718177,
+        "narHash": "sha256-TaduLBdh+DwJv5vN/LRo2dcAPhi7JJyyYgMczPr0bpk=",
+        "owner": "Fission-AI",
+        "repo": "OpenSpec",
+        "rev": "c879d13d5f5d045c532a08523316d2d74f2db99a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fission-AI",
+        "repo": "OpenSpec",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "helium-browser": "helium-browser",
@@ -505,6 +525,7 @@
         "noctalia": "noctalia",
         "nvf": "nvf",
         "omp": "omp",
+        "openspec": "openspec",
         "sops-nix": "sops-nix",
         "zed": "zed"
       }
