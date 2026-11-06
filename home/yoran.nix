@@ -371,14 +371,6 @@ in
       '';
       executable = true;
     };
-    ".local/bin/codex-resume" = {
-      text = ''
-        #!/usr/bin/env bash
-        # Resume the most recent Codex conversation for the current project.
-        exec codex resume --last "$@"
-      '';
-      executable = true;
-    };
     ".local/bin/scolarsia-vpn" = {
       source = ../dotfiles/noctalia/scripts/scolarsia-vpn;
       executable = true;
@@ -475,8 +467,6 @@ in
       executable = true;
     };
 
-    "opencode/opencode.jsonc".source = ../dotfiles/opencode/opencode.jsonc;
-    "opencode/skills/grill-me/SKILL.md".source = ../dotfiles/opencode/skills/grill-me/SKILL.md;
     "zed/settings.template.json".source = ../dotfiles/zed/settings.json;
     "herdr/config.toml".text = ''
       onboarding = false

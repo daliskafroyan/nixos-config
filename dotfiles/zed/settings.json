@@ -23,16 +23,7 @@
     "light": "Gruvbox Light Soft",
     "dark": "Gruvbox Dark Soft"
   },
-  "agent_servers": {
-    "OpenCode": {
-      "command": "/run/current-system/sw/bin/opencode",
-      "args": ["acp"]
-    },
-    "Oh My Pi": {
-      "command": "/run/current-system/sw/bin/omp",
-      "args": ["acp"]
-    }
-  },
+  "agent_servers": {},
   "lsp": {
     "tinymist": {
       "settings": {

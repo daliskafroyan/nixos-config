@@ -20,7 +20,6 @@
       url = "github:Fission-AI/OpenSpec";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    omp.url = "github:can1357/oh-my-pi";
     nvf = {
       url = "github:NotAShelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";

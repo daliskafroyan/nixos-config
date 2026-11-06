@@ -1,28 +1,6 @@
 { inputs, pkgs, ... }:
 
 let
-  codexUpstream = pkgs.stdenvNoCC.mkDerivation {
-    pname = "codex";
-    version = "0.144.5";
-
-    src = pkgs.fetchurl {
-      url = "https://github.com/openai/codex/releases/download/rust-v0.144.5/codex-x86_64-unknown-linux-musl.tar.gz";
-      hash = "sha256-tr6hO+30kyMvZxdxTEXng3iMaVztzzfDRPc6/Jex7J8=";
-    };
-
-    dontConfigure = true;
-    dontBuild = true;
-
-    sourceRoot = ".";
-
-    installPhase = ''
-      runHook preInstall
-      mkdir -p "$out/bin"
-      install -m 0755 codex-x86_64-unknown-linux-musl "$out/bin/codex"
-      runHook postInstall
-    '';
-  };
-
   herdrUpstream = pkgs.stdenvNoCC.mkDerivation {
     pname = "herdr";
     version = "0.7.4";
@@ -162,35 +140,6 @@ let
       hash = "sha256-/L4IsRHZwf2wm5wIlSsG4cgpxiFj66JYTEtOyFm+B50=";
     };
   });
-
-  opencode = pkgs.stdenv.mkDerivation {
-    pname = "opencode";
-    version = "1.17.7";
-
-    src = pkgs.fetchurl {
-      url = "https://registry.npmjs.org/opencode-linux-x64/-/opencode-linux-x64-1.17.7.tgz";
-      hash = "sha512-UIxkdA/8281EHbHYVr5PSD+eVoMdlyfkmXiZp3u9duttsMHdf1F6lw0XjYmDRBCPp8zQM1D1RLCABuRA/kUX+Q==";
-    };
-
-    nativeBuildInputs = [
-      pkgs.autoPatchelfHook
-    ];
-
-    buildInputs = [
-      pkgs.stdenv.cc.cc.lib
-    ];
-
-    dontConfigure = true;
-    dontBuild = true;
-
-    installPhase = ''
-      mkdir -p $out/share/opencode
-      cp -r ./* $out/share/opencode/
-
-      mkdir -p $out/bin
-      ln -s $out/share/opencode/bin/opencode $out/bin/opencode
-    '';
-  };
 in
 {
   environment.systemPackages = with pkgs; [
@@ -227,12 +176,9 @@ in
     mongodb-compass
     fastfetch
     nodejs
-    codexUpstream
     herdrUpstream
     druk
     inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
-    opencode
-    inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.omp
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.aven
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.agentsview
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.gno
