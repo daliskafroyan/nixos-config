@@ -178,8 +178,10 @@ in
     nodejs
     herdrUpstream
     druk
+    inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.aven
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-agent-acp
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.agentsview
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.gno
     obs-studio
