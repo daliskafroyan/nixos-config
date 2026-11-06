@@ -76,6 +76,14 @@
     HandleLidSwitch = "suspend";
     HandleLidSwitchDocked = "ignore";
   };
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+    persistent = true;
+    randomizedDelaySec = "45min";
+  };
   services.power-profiles-daemon.enable = true;
   services.upower.enable = true;
   services.udisks2.enable = true;
@@ -93,7 +101,7 @@
   users.users.${username} = {
     isNormalUser = true;
     description = username;
-    extraGroups = [ "networkmanager" "wheel" "docker" "disk" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [ ];
   };
 
