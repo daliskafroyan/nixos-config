@@ -195,6 +195,19 @@ let
       hash = "sha256-/L4IsRHZwf2wm5wIlSsG4cgpxiFj66JYTEtOyFm+B50=";
     };
   });
+
+  # ZapZap aborts when the notification daemon rejects CloseNotification for a
+  # notification that has already expired or been dismissed (DBus NotFound).
+  zapzap = pkgs.zapzap.overridePythonAttrs (old: {
+    postPatch = (old.postPatch or "") + ''
+      substituteInPlace zapzap/services/NotificationManager.py \
+        --replace-fail "            DBUS_IFACE.CloseNotification(self.id)" \
+"            try:
+                DBUS_IFACE.CloseNotification(self.id)
+            except Exception:
+                pass"
+    '';
+  });
 in
 {
   environment.systemPackages = with pkgs; [
@@ -225,6 +238,7 @@ in
     gnome-disk-utility
     inputs.helium-browser.packages.${pkgs.stdenv.hostPlatform.system}.helium
     youtube-music
+    zapzap
     inputs.zed.packages.${pkgs.stdenv.hostPlatform.system}.default
     obsidianUpstream
     vesktop
