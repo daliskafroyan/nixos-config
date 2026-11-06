@@ -251,6 +251,8 @@ in
     herdrApp
     # Review tool used by the bercail Herdr layout; not in 25.11.
     inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.tuicr
+    # Desktop app (t3code-desktop) and `t3` CLI; 25.11 has no t3code.
+    inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.t3code
     inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.aven
