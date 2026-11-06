@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use IO::Socket::UNIX;
-use MIME::Base64 qw(decode_base64);
+use MIME::Base64 qw(decode_base64 encode_base64);
 use Socket qw(SOCK_STREAM inet_ntoa);
 
 my $profile_name      = 'ritase-royan-vpn';
@@ -11,6 +11,7 @@ my $remote_host       = '13.250.155.188';
 my $remote_port       = '17671';
 my $default_username  = 'nil';
 my $staging_db_host   = 'dev-ritase.c4vzbhmvfbwg.ap-southeast-1.rds.amazonaws.com';
+my $production_db_host = 'live-ritase.c4vzbhmvfbwg.ap-southeast-1.rds.amazonaws.com';
 my $management_socket = "/tmp/ritase-vpn-$$.sock";
 
 my $ca_path = '/home/yoran/.local/share/networkmanagement/certificates/nm-openvpn/ritase-royan-vpn-ca.pem';
@@ -23,7 +24,7 @@ END {
 }
 
 sub usage {
-    die "Usage: ritase-vpn <up|down|status>\n";
+    die "Usage: ritase-vpn <up|up-full|down|status>\n";
 }
 
 sub require_root {
@@ -66,7 +67,7 @@ sub mgmt_quote {
 sub resolve_ipv4 {
     my ($host) = @_;
     my @result = gethostbyname($host);
-    die "Could not resolve staging database host $host\n" unless @result && defined $result[4];
+    die "Could not resolve database host $host\n" unless @result && defined $result[4];
     return inet_ntoa($result[4]);
 }
 
@@ -147,11 +148,13 @@ sub command_down {
 }
 
 sub command_up {
+    my ($full_tunnel) = @_;
     require_root();
 
-    # AWS can change an RDS endpoint's public IP. Resolve it at connection
-    # time so the narrow route follows the endpoint rather than a stale IP.
+    # AWS can change RDS endpoint IPs. Resolve both endpoints at connection
+    # time so their narrow routes do not become stale.
     my $staging_db_ip = resolve_ipv4($staging_db_host);
+    my $production_db_ip = resolve_ipv4($production_db_host);
 
     my @existing_pids = vpn_openvpn_pids();
     if (@existing_pids) {
@@ -163,6 +166,10 @@ sub command_up {
 
     my $username = prompt('VPN username', 0, $default_username);
     my $password = prompt('VPN password', 1, undef);
+
+    my @routing_options = $full_tunnel
+      ? ()
+      : ('--pull-filter', 'ignore', 'redirect-gateway');
 
     my @openvpn_cmd = (
         'openvpn',
@@ -182,19 +189,22 @@ sub command_up {
         '--key', $key_path,
         '--tls-auth', $tls_auth_path, '1',
         '--auth-user-pass',
+        # The server issues its OTP challenge through OpenVPN's dynamic CRV1
+        # protocol, which requires one interactive retry.
         '--auth-retry', 'interact',
         '--auth-nocache',
         '--connect-timeout', '4',
         '--ping', '10',
         '--ping-restart', '60',
         '--push-peer-info',
-        # Keep the normal Wi-Fi default route for internet services such as
-        # Codex, while accepting the VPN's explicit Ritase private routes.
-        '--pull-filter', 'ignore', 'redirect-gateway',
-        # The staging RDS endpoint is publicly addressed, but is reachable
-        # only from the company network. Route precisely this address through
-        # the VPN without turning the session into a full tunnel.
+        # Normal `up` keeps Wi-Fi as the default route; `up-full` accepts the
+        # server's redirect-gateway route for networks that block GitHub.
+        @routing_options,
+        # The RDS endpoints are publicly addressed but reachable only from
+        # the company network. Route precisely them through the VPN without
+        # turning the session into a full tunnel.
         '--route', $staging_db_ip, '255.255.255.255',
+        '--route', $production_db_ip, '255.255.255.255',
         '--management', $management_socket, 'unix',
         '--management-query-passwords',
         '--verb', '3',
@@ -212,22 +222,42 @@ sub command_up {
     $sock->autoflush(1);
 
     my ($pending_state, $pending_text, $pending_echo, $pending_user);
+    my $static_response_submitted = 0;
+    my $dynamic_response_submitted = 0;
 
     while (my $line = <$sock>) {
         print $line;
 
-        if ($line =~ /^>PASSWORD:Need 'Auth' username\/password/) {
+        if ($line =~ /^>PASSWORD:Need 'Auth' username\/password(?: SC:([01]),(.*))?/) {
+            my ($static_echo, $static_text) = ($1, $2);
             my $send_user = $username;
             my $send_pass = $password;
 
             if (defined $pending_state) {
+                if ($dynamic_response_submitted) {
+                    kill 'TERM', $pid;
+                    waitpid $pid, 0;
+                    die "VPN authentication failed after the OTP challenge.\n";
+                }
+
                 my $otp = prompt($pending_text || 'OTP', $pending_echo ? 0 : 1, undef);
                 $send_user = $pending_user if defined $pending_user && length $pending_user;
                 $send_pass = 'CRV1::' . $pending_state . '::' . $otp;
+                $dynamic_response_submitted = 1;
                 undef $pending_state;
                 undef $pending_text;
                 undef $pending_echo;
                 undef $pending_user;
+            } elsif (defined $static_echo) {
+                if ($static_response_submitted) {
+                    kill 'TERM', $pid;
+                    waitpid $pid, 0;
+                    die "VPN authentication failed before the OTP challenge.\n";
+                }
+
+                my $otp = prompt($static_text || 'OTP', $static_echo ? 0 : 1, undef);
+                $send_pass = 'SCRV1:' . encode_base64($password, '') . ':' . encode_base64($otp, '');
+                $static_response_submitted = 1;
             }
 
             print {$sock} 'username "Auth" ' . mgmt_quote($send_user) . "\n";
@@ -259,7 +289,9 @@ sub command_up {
 my $command = shift @ARGV // usage();
 
 if ($command eq 'up') {
-    command_up();
+    command_up(0);
+} elsif ($command eq 'up-full') {
+    command_up(1);
 } elsif ($command eq 'down') {
     command_down();
 } elsif ($command eq 'status') {
