@@ -116,6 +116,8 @@
     package = pkgs.docker_29;
   };
 
+  virtualisation.waydroid.enable = true;
+
   environment.pathsToLink = [
     "/share/icons"
     "/share/themes"

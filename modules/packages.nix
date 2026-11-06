@@ -218,6 +218,7 @@ in
     gruvboxGtkTheme
     gruvbox-dark-icons-gtk
     adwaita-icon-theme
+    waydroid-helper
     wl-clipboard
     xwayland-satellite
     chromium
