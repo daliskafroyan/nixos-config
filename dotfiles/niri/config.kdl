@@ -358,21 +358,21 @@ binds {
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
     Mod+T hotkey-overlay-title="Open a Terminal: Ghostty" { spawn "ghostty"; }
-    Mod+D hotkey-overlay-title="Open Noctalia Launcher" { spawn-sh "noctalia msg panel-toggle launcher"; }
-    Mod+Space hotkey-overlay-title="Open Noctalia Launcher" { spawn-sh "noctalia msg panel-toggle launcher"; }
-    Mod+S hotkey-overlay-title="Open Noctalia Control Center" { spawn-sh "noctalia msg panel-toggle control-center"; }
-    Mod+Shift+Comma hotkey-overlay-title="Open Noctalia Settings" { spawn-sh "noctalia msg settings-toggle"; }
-    Mod+Shift+T hotkey-overlay-title="Toggle Dark Light Theme" { spawn-sh "noctalia msg theme-mode-toggle"; }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn-sh "noctalia msg session lock"; }
+    Super+D hotkey-overlay-title="Open Noctalia Launcher" { spawn "/run/current-system/sw/bin/noctalia" "msg" "panel-toggle" "launcher"; }
+    Super+Space hotkey-overlay-title="Open Noctalia Launcher" { spawn "/run/current-system/sw/bin/noctalia" "msg" "panel-toggle" "launcher"; }
+    Mod+S hotkey-overlay-title="Open Noctalia Control Center" { spawn "/run/current-system/sw/bin/noctalia" "msg" "panel-toggle" "control-center"; }
+    Mod+Shift+Comma hotkey-overlay-title="Open Noctalia Settings" { spawn "/run/current-system/sw/bin/noctalia" "msg" "settings-toggle"; }
+    Mod+Shift+T hotkey-overlay-title="Toggle Dark Light Theme" { spawn "/run/current-system/sw/bin/noctalia" "msg" "theme-mode-toggle"; }
+    Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "/run/current-system/sw/bin/noctalia" "msg" "session" "lock"; }
 
 
     // Example volume keys mappings for PipeWire & WirePlumber.
     // The allow-when-locked=true property makes them work even when the session is locked.
     // Using spawn-sh allows to pass multiple arguments together with the command.
     // "-l 1.0" limits the volume to 100%.
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "noctalia msg volume-up"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "noctalia msg volume-down"; }
-    XF86AudioMute        allow-when-locked=true { spawn-sh "noctalia msg volume-mute"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "/run/current-system/sw/bin/noctalia" "msg" "volume-up"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "/run/current-system/sw/bin/noctalia" "msg" "volume-down"; }
+    XF86AudioMute        allow-when-locked=true { spawn "/run/current-system/sw/bin/noctalia" "msg" "volume-mute"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
     // Example media keys mapping using playerctl.
@@ -383,10 +383,10 @@ binds {
     XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
 
     // Route brightness through Noctalia so the shell OSD stays in sync.
-    F5 allow-when-locked=true { spawn-sh "noctalia msg brightness-down"; }
-    F6 allow-when-locked=true { spawn-sh "noctalia msg brightness-up"; }
-    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "noctalia msg brightness-up"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "noctalia msg brightness-down"; }
+    F5 allow-when-locked=true { spawn "/run/current-system/sw/bin/noctalia" "msg" "brightness-down"; }
+    F6 allow-when-locked=true { spawn "/run/current-system/sw/bin/noctalia" "msg" "brightness-up"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn "/run/current-system/sw/bin/noctalia" "msg" "brightness-up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "/run/current-system/sw/bin/noctalia" "msg" "brightness-down"; }
 
     // Open/close the Overview: a zoomed-out view of workspaces and windows.
     // You can also move the mouse into the top-left hot corner,
