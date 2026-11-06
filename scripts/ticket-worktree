@@ -1,0 +1,151 @@
+#!/usr/bin/env sh
+
+set -eu
+
+usage() {
+  printf 'Usage: %s TICKET [REPOSITORY[=BRANCH] ...]\n' "$0" >&2
+  printf '       %s --remove TICKET [REPOSITORY ...]\n' "$0" >&2
+  printf 'Create or remove ticket worktrees from ~/codes/work/repos.\n' >&2
+  printf 'Defaults to ritase-frontend and ritase-api.\n' >&2
+  printf 'Automatic branch lookup prefers feature/TICKET, then feat(TICKET), then creates feature/TICKET.\n' >&2
+  printf 'Use REPOSITORY=BRANCH to select an exact branch for one repository.\n' >&2
+  exit 2
+}
+
+[ "$#" -ge 1 ] || usage
+
+action=create
+if [ "$1" = "--remove" ]; then
+  action=remove
+  shift
+fi
+
+[ "$#" -ge 1 ] || usage
+
+ticket=$1
+shift
+
+case "$ticket" in
+  FREIG-[0-9]*) ;;
+  *)
+    printf 'Ticket must use the FREIG-<number> format: %s\n' "$ticket" >&2
+    exit 2
+    ;;
+esac
+
+if [ "$#" -eq 0 ]; then
+  set -- ritase-frontend ritase-api
+fi
+
+work_root="$HOME/codes/work"
+repos_root="$work_root/repos"
+ticket_root="$work_root/tickets/$ticket"
+default_branch="feature/$ticket"
+legacy_branch="feat($ticket)"
+
+if [ "$action" = remove ]; then
+  for repository in "$@"; do
+    case "$repository" in
+      *=*|"")
+        printf 'Remove mode accepts repository names only: %s\n' "$repository" >&2
+        exit 2
+        ;;
+    esac
+
+    source="$repos_root/$repository"
+    destination="$ticket_root/$repository"
+
+    if [ ! -d "$source/.git" ]; then
+      printf 'Canonical repository not found: %s\n' "$source" >&2
+      exit 1
+    fi
+
+    if [ -e "$destination" ]; then
+      git -C "$source" worktree remove "$destination"
+      printf 'Removed: %s\n' "$destination"
+    else
+      printf 'Not found: %s\n' "$destination"
+    fi
+  done
+
+  if rmdir "$ticket_root" 2>/dev/null; then
+    printf 'Removed empty ticket workspace: %s\n' "$ticket_root"
+  fi
+  exit 0
+fi
+
+for spec in "$@"; do
+  case "$spec" in
+    *=*)
+      repository=${spec%%=*}
+      branch=${spec#*=}
+      branch_explicit=true
+      ;;
+    *)
+      repository=$spec
+      branch=$default_branch
+      branch_explicit=false
+      ;;
+  esac
+
+  if [ -z "$repository" ] || [ -z "$branch" ]; then
+    printf 'Repository and branch must both be non-empty: %s\n' "$spec" >&2
+    exit 2
+  fi
+
+  source="$repos_root/$repository"
+  destination="$ticket_root/$repository"
+
+  if [ ! -d "$source/.git" ]; then
+    printf 'Canonical repository not found: %s\n' "$source" >&2
+    exit 1
+  fi
+
+  if [ -e "$destination" ]; then
+    current_branch=$(git -C "$destination" branch --show-current 2>/dev/null || true)
+
+    if [ -f "$destination/.git" ] && {
+      [ "$current_branch" = "$branch" ] || {
+        [ "$branch_explicit" = false ] && {
+          [ "$current_branch" = "$default_branch" ] || [ "$current_branch" = "$legacy_branch" ]
+        }
+      }
+    }; then
+      printf 'Already exists: %s (%s)\n' "$destination" "$current_branch"
+      continue
+    fi
+
+    printf 'Refusing to overwrite existing path: %s\n' "$destination" >&2
+    exit 1
+  fi
+
+  git -C "$source" fetch origin
+
+  if [ "$branch_explicit" = false ]; then
+    if git -C "$source" show-ref --verify --quiet "refs/heads/$default_branch" \
+      || git -C "$source" show-ref --verify --quiet "refs/remotes/origin/$default_branch"; then
+      branch=$default_branch
+    elif git -C "$source" show-ref --verify --quiet "refs/heads/$legacy_branch" \
+      || git -C "$source" show-ref --verify --quiet "refs/remotes/origin/$legacy_branch"; then
+      branch=$legacy_branch
+    fi
+  fi
+
+  if git -C "$source" worktree list --porcelain | grep -Fqx "branch refs/heads/$branch"; then
+    printf 'Branch %s is already checked out in another %s worktree.\n' "$branch" "$repository" >&2
+    exit 1
+  fi
+
+  mkdir -p "$(dirname "$destination")"
+
+  if git -C "$source" show-ref --verify --quiet "refs/heads/$branch"; then
+    git -C "$source" worktree add "$destination" "$branch"
+  elif git -C "$source" show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+    git -C "$source" worktree add --track -b "$branch" "$destination" "origin/$branch"
+  else
+    git -C "$source" worktree add -b "$branch" "$destination" origin/master
+  fi
+
+done
+
+printf 'Ticket workspace ready: %s\n' "$ticket_root"

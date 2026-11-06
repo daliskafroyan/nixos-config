@@ -23,6 +23,10 @@ git commit -m "feat(nixos): describe change"
 git push origin main
 ```
 
+## Ticket worktrees
+
+Use `ticket-worktree` to create isolated frontend/API worktrees for Jira tickets without copying repositories. See [Ticket worktrees](docs/ticket-worktrees.md) for branch conventions, explicit branch mappings, and cleanup.
+
 ## GitHub sync
 
 GitHub stores the source repo only. A rebuild is still required on each machine.
