@@ -42,5 +42,6 @@
     in
     {
       nixosConfigurations = lib.genAttrs hostNames mkHost;
+      formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
     };
 }
