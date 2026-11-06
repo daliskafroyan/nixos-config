@@ -37,13 +37,20 @@
   ];
   # Private access to gaikiken and its Jellyfin instance from any network.
   services.tailscale.enable = true;
+  networking.firewall = {
+    enable = true;
+    interfaces.tailscale0 = {
+      allowedTCPPorts = [ 22000 ];
+      allowedUDPPorts = [ 22000 ];
+    };
+  };
   services.syncthing = {
     enable = true;
     user = username;
     dataDir = "/home/${username}/Documents";
     configDir = "/home/${username}/.config/syncthing";
     guiAddress = "127.0.0.1:8384";
-    openDefaultPorts = true;
+    openDefaultPorts = false;
   };
   hardware.bluetooth.enable = true;
   zramSwap.enable = true;
