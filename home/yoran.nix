@@ -484,43 +484,6 @@ in
     };
 
     "zed/settings.template.json".source = ../dotfiles/zed/settings.json;
-    "herdr/config.toml".text = ''
-      onboarding = false
-
-      [theme]
-      name = "gruvbox"
-
-      [ui]
-      agent_panel_sort = "priority"
-
-      [keys]
-      prefix = "ctrl+b"
-      new_tab = ["prefix+c", "ctrl+alt+n"]
-      close_tab = ["prefix+shift+x", "ctrl+alt+q"]
-      rename_tab = ["prefix+shift+t", "ctrl+alt+r"]
-      close_workspace = ["prefix+shift+d", "ctrl+alt+shift+q"]
-      workspace_picker = ["prefix+w", "ctrl+alt+w"]
-      previous_tab = ["prefix+p", "ctrl+alt+["]
-      next_tab = ["prefix+n", "ctrl+alt+]"]
-      focus_pane_left = ["prefix+h", "ctrl+alt+h"]
-      focus_pane_down = ["prefix+j", "ctrl+alt+j"]
-      focus_pane_up = ["prefix+k", "ctrl+alt+k"]
-      focus_pane_right = ["prefix+l", "ctrl+alt+l"]
-      split_vertical = ["prefix+v", "ctrl+alt+d"]
-      split_horizontal = ["prefix+minus", "ctrl+alt+shift+d"]
-      zoom = ["prefix+z", "ctrl+alt+z"]
-      toggle_sidebar = ["prefix+b", "ctrl+alt+b"]
-      close_pane = ["prefix+x", "ctrl+alt+x"]
-
-      [session]
-      # Re-open each supported agent (including Codex) in its exact recorded
-      # conversation when Herdr restores panes after a server or system restart.
-      resume_agents_on_restore = true
-
-      [experimental]
-      # Keep the visible terminal output too, not only Codex's saved transcript.
-      pane_history = true
-    '';
   };
 
   systemd.user.services.noctalia = {

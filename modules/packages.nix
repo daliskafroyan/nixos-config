@@ -1,27 +1,6 @@
 { inputs, pkgs, ... }:
 
 let
-  herdrUpstream = pkgs.stdenvNoCC.mkDerivation {
-    pname = "herdr";
-    version = "0.7.4";
-
-    src = pkgs.fetchurl {
-      url = "https://github.com/ogulcancelik/herdr/releases/download/v0.7.4/herdr-linux-x86_64";
-      hash = "sha256-vA/ALUulAPnKwjU6Q+Z/4DZ4Xsym61U3jgUPrDwQMFk=";
-    };
-
-    dontConfigure = true;
-    dontBuild = true;
-    dontUnpack = true;
-
-    installPhase = ''
-      runHook preInstall
-      mkdir -p "$out/bin"
-      install -m 0755 "$src" "$out/bin/herdr"
-      runHook postInstall
-    '';
-  };
-
   drukBinary = pkgs.stdenvNoCC.mkDerivation {
     pname = "druk";
     version = "1.10.0";
@@ -176,7 +155,6 @@ in
     mongodb-compass
     fastfetch
     nodejs
-    herdrUpstream
     druk
     inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
@@ -184,6 +162,7 @@ in
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-agent-acp
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.agentsview
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.gno
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.herdr
     obs-studio
     tldrawOffline
     tldrawDesktopEntry
