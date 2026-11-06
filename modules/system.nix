@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, username, ... }:
 
 {
   nixpkgs.config.allowUnfree = true;
@@ -39,9 +39,9 @@
   services.tailscale.enable = true;
   services.syncthing = {
     enable = true;
-    user = "yoran";
-    dataDir = "/home/yoran/Documents";
-    configDir = "/home/yoran/.config/syncthing";
+    user = username;
+    dataDir = "/home/${username}/Documents";
+    configDir = "/home/${username}/.config/syncthing";
     guiAddress = "127.0.0.1:8384";
     openDefaultPorts = true;
   };
@@ -61,9 +61,9 @@
     variant = "";
   };
 
-  users.users.yoran = {
+  users.users.${username} = {
     isNormalUser = true;
-    description = "yoran";
+    description = username;
     extraGroups = [ "networkmanager" "wheel" "docker" "disk" ];
     packages = with pkgs; [ ];
   };

@@ -1,4 +1,4 @@
-{ inputs, lib, pkgs, hostName ? null, ... }:
+{ inputs, lib, pkgs, username, hostName ? null, ... }:
 
 let
   encryptedWallpaperDir = ../assets/wallpapers;
@@ -14,8 +14,8 @@ in
 {
   imports = hostImports ++ [ inputs.nvf.homeManagerModules.default ];
 
-  home.username = "yoran";
-  home.homeDirectory = "/home/yoran";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
   home.stateVersion = "25.11";
 
   xdg.enable = true;
@@ -392,7 +392,7 @@ in
         Name=dbeaver-ce
         GenericName=Universal Database Manager
         Comment=Universal Database Manager and SQL Client.
-        Exec=/home/yoran/.local/bin/dbeaver %U
+        Exec=/home/${username}/.local/bin/dbeaver %U
         Icon=dbeaver
         Categories=IDE;Development
         StartupWMClass=DBeaver
