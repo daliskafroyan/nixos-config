@@ -214,6 +214,7 @@ in
     age
     ghostty
     authenticator
+    awscli2
     btop
     bubblewrap
     cloudflared
@@ -222,12 +223,14 @@ in
     gh
     git
     unzip
+    zip
     networkmanagerapplet
     openvpn
     sops
     ssh-to-age
     xfce.thunar
     xfce.thunar-archive-plugin
+    tor-browser
     xarchiver
     gruvboxGtkTheme
     gruvbox-dark-icons-gtk
@@ -242,11 +245,13 @@ in
     zapzap
     inputs.zed.packages.${pkgs.stdenv.hostPlatform.system}.default
     obsidianUpstream
-    vesktop
+    discord
     dbeaver-bin
     mongodb-compass
+    mongosh
     fastfetch
     nodejs
+    python3
     druk
     herdrCore
     herdrApp
