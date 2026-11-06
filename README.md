@@ -42,6 +42,24 @@ sudo ln -sfn ~/system-configuration /etc/nixos
 sudo nixos-rebuild switch --flake path:~/system-configuration#<hostname>
 ```
 
+## Laptop operations and recovery
+
+For the `nixos` laptop's firewall boundary, Syncthing/Tailscale assumptions, memory-pressure policy, lock-before-suspend behavior, privileged groups, and rollback procedures, see [Laptop Operations Baseline](docs/laptop-operations.md).
+
+Before a risky switch, record the current generation:
+
+```bash
+nixos-rebuild list-generations
+```
+
+If a switch is unsuccessful but the current session remains usable, roll back immediately:
+
+```bash
+sudo nixos-rebuild switch --rollback
+```
+
+Otherwise reboot and select a known-good NixOS generation in the systemd-boot menu. The host automatically removes generations older than 30 days, so do not run ad hoc garbage collection until you have confirmed the rollback window is sufficient.
+
 ## Host layout
 
 - `hosts/common/`: shared NixOS modules and Home Manager wiring
