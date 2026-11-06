@@ -21,6 +21,10 @@
       url = "github:Fission-AI/OpenSpec";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ttt = {
+      url = "github:eugenioenko/ttt";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{ nixpkgs, home-manager, ... }:
