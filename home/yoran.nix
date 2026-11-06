@@ -567,6 +567,44 @@ in
       $DRY_RUN_CMD rm -f "$HOME/.config/zed/settings.json"
       $DRY_RUN_CMD cp "$HOME/.config/zed/settings.template.json" "$HOME/.config/zed/settings.json"
     fi
+
+    if [ -z "$DRY_RUN_CMD" ]; then
+      ${pkgs.python3}/bin/python3 - <<'PY'
+import json
+import os
+import tempfile
+from pathlib import Path
+
+path = Path.home() / ".config/zed/settings.json"
+text = path.read_text()
+# Existing Zed settings permit leading // documentation comments. The
+# migration rewrites strict JSON while preserving every settings key.
+json_text = "\n".join(
+    line for line in text.splitlines() if not line.lstrip().startswith("//")
+)
+settings = json.loads(json_text)
+
+settings.setdefault("theme", {}).update({
+    "mode": "system",
+    "light": "Gruvbox Light Soft",
+    "dark": "Gruvbox Dark Soft",
+})
+settings.setdefault("icon_theme", {}).update({
+    "mode": "system",
+    "light": "Zed (Default)",
+    "dark": "Zed (Default)",
+})
+
+with tempfile.NamedTemporaryFile(
+    mode="w", dir=path.parent, prefix="settings.json.", delete=False
+) as temporary:
+    json.dump(settings, temporary, indent=2)
+    temporary.write("\n")
+    temporary_path = temporary.name
+
+os.replace(temporary_path, path)
+PY
+    fi
   '';
 
 

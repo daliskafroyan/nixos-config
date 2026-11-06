@@ -213,6 +213,7 @@ in
     xarchiver
     gruvboxGtkTheme
     gruvbox-dark-icons-gtk
+    adwaita-icon-theme
     wl-clipboard
     xwayland-satellite
     chromium

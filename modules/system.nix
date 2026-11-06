@@ -114,8 +114,12 @@
     package = pkgs.docker_29;
   };
 
+  environment.pathsToLink = [
+    "/share/icons"
+    "/share/themes"
+  ];
+
   environment.sessionVariables = {
-    GTK_THEME = "Gruvbox-Dark";
     NIXOS_OZONE_WL = "1";
   };
 }
