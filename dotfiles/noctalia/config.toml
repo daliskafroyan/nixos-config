@@ -39,11 +39,11 @@ capsule_opacity = 0.9
 
 start = ["launcher", "wallpaper", "workspaces"]
 center = []
-end = ["media", "tray", "notifications", "clipboard", "network", "bluetooth", "volume", "battery", "weather", "clock", "control-center", "session"]
+end = ["media", "tray", "notifications", "clipboard", "network", "volume", "battery", "weather", "clock", "control-center", "session"]
 
 [[bar.main.capsule_group]]
 id = "signals"
-members = ["network", "bluetooth", "volume", "battery"]
+members = ["network", "volume", "battery"]
 fill = "surface_variant"
 border = ""
 opacity = 0.9
@@ -61,11 +61,11 @@ radius = 0.0
 
 [bar.main.monitor.laptop]
 match = "eDP-1"
-end = ["media", "tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "clock", "control-center", "session"]
+end = ["media", "tray", "notifications", "clipboard", "network", "volume", "brightness", "battery", "clock", "control-center", "session"]
 
 [[bar.main.monitor.laptop.capsule_group]]
 id = "signals"
-members = ["network", "bluetooth", "volume", "brightness", "battery"]
+members = ["network", "volume", "brightness", "battery"]
 fill = "surface_variant"
 border = ""
 opacity = 0.9

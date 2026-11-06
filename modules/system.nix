@@ -52,7 +52,11 @@
     guiAddress = "127.0.0.1:8384";
     openDefaultPorts = false;
   };
-  hardware.bluetooth.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    # Keep the adapter available for manual use without powering it on at boot.
+    powerOnBoot = false;
+  };
   zramSwap.enable = true;
 
   # Kill the largest eligible workload before the kernel OOM killer destabilizes
