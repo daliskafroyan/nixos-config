@@ -119,6 +119,8 @@ in
     VISUAL = "nvim";
   };
 
+  home.sessionPath = [ "$HOME/.local/bin" ];
+
   programs.helix = {
     enable = true;
     settings = {
@@ -152,6 +154,14 @@ in
 
   programs.bash = {
     enable = true;
+    # The desktop session exports __HM_SESS_VARS_SOURCED without home.sessionPath,
+    # so hm-session-vars.sh skips the PATH prepend in terminals spawned from it.
+    bashrcExtra = ''
+      case ":$PATH:" in
+        *":$HOME/.local/bin:"*) ;;
+        *) export PATH="$HOME/.local/bin:$PATH" ;;
+      esac
+    '';
     shellAliases = {
       "sys-switch" = ''"$HOME/system-configuration/scripts/switch"'';
       "ticket-worktree" = ''"$HOME/system-configuration/scripts/ticket-worktree"'';
