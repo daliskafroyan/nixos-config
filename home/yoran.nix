@@ -533,6 +533,20 @@ in
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
+  # Reuse Noctalia's existing Wayland lock screen for logind lock and sleep
+  # events. systemd-lock-handler bridges these targets from the active session.
+  systemd.user.services.noctalia-lock = {
+    Unit = {
+      Description = "Lock the graphical session through Noctalia";
+      Before = [ "lock.target" "sleep.target" ];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/noctalia msg session lock";
+    };
+    Install.WantedBy = [ "lock.target" "sleep.target" ];
+  };
+
   systemd.user.services.lxqt-policykit-agent = {
     Unit = {
       Description = "PolicyKit authentication agent";

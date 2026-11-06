@@ -70,6 +70,12 @@
       "^niri$"
     ];
   };
+
+  services.systemd-lock-handler.enable = true;
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchDocked = "ignore";
+  };
   services.power-profiles-daemon.enable = true;
   services.upower.enable = true;
   services.udisks2.enable = true;
