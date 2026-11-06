@@ -23,6 +23,8 @@
   };
   programs.steam.enable = true;
   programs.xwayland.enable = true;
+  # Lets prebuilt binaries (e.g. LSP servers downloaded by Mason) find a dynamic linker.
+  programs.nix-ld.enable = true;
   services.displayManager.gdm.enable = true;
   services.displayManager.defaultSession = "niri";
   xdg.portal.enable = true;

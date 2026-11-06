@@ -1,4 +1,4 @@
-{ inputs, lib, pkgs, username, hostName ? null, ... }:
+{ config, inputs, lib, pkgs, username, hostName ? null, ... }:
 
 let
   encryptedWallpaperDir = ../assets/wallpapers;
@@ -12,7 +12,7 @@ let
       [ ];
 in
 {
-  imports = hostImports ++ [ inputs.nvf.homeManagerModules.default ];
+  imports = hostImports;
 
   home.username = username;
   home.homeDirectory = "/home/${username}";
@@ -45,73 +45,21 @@ in
     xfce.tumbler
   ];
 
-  programs.nvf = {
+  # LazyVim manages its own plugins; Nix only provides Neovim and the external
+  # tools it shells out to (Treesitter compilation, pickers, lazygit).
+  programs.neovim = {
     enable = true;
-    settings.vim = {
-      viAlias = true;
-      vimAlias = true;
-      opts = {
-        number = true;
-        relativenumber = true;
-      };
-      theme = {
-        enable = true;
-        name = "gruvbox";
-        style = "dark";
-      };
-      visuals.nvim-web-devicons.enable = true;
-      filetree.nvimTree = {
-        enable = true;
-        setupOpts = {
-          update_focused_file.enable = true;
-          git.enable = true;
-        };
-      };
-      terminal.toggleterm = {
-        enable = true;
-      };
-      lazy.plugins.toggleterm-nvim = {
-        keys = [
-          {
-            key = "<leader>gg";
-            mode = "n";
-            desc = "Open GitUI";
-          }
-        ];
-        after = ''
-          local terminal = require 'toggleterm.terminal'
-          local gitui = terminal.Terminal:new({
-            cmd = '${lib.getExe pkgs.gitui}',
-            direction = 'float',
-            hidden = true,
-            on_open = function(term)
-              vim.cmd('startinsert!')
-            end,
-          })
-
-          vim.keymap.set('n', '<leader>gg', function() gitui:toggle() end, {
-            silent = true,
-            noremap = true,
-            desc = 'Open GitUI',
-          })
-        '';
-      };
-      # nvf currently requires every legacy keymap group to be explicitly
-      # initialized, even when no mappings are configured.
-      maps = lib.genAttrs [
-        "normal"
-        "insert"
-        "select"
-        "visual"
-        "terminal"
-        "normalVisualOp"
-        "visualOnly"
-        "operator"
-        "insertCommand"
-        "lang"
-        "command"
-      ] (_: { });
-    };
+    viAlias = true;
+    vimAlias = true;
+    extraPackages = with pkgs; [
+      curl
+      fd
+      gcc
+      gnumake
+      lazygit
+      ripgrep
+      tree-sitter
+    ];
   };
 
   home.sessionVariables = {
@@ -483,6 +431,9 @@ in
 
   xdg.configFile = {
     "ghostty/config".source = ../dotfiles/ghostty/config;
+    # Linked to the checkout, not the store: lazy.nvim writes lazy-lock.json
+    # and lazyvim.json back into this directory.
+    "nvim".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system-configuration/dotfiles/nvim";
     "niri/config.kdl".source = ../dotfiles/niri/config.kdl;
     "noctalia/config.toml".source = ../dotfiles/noctalia/config.toml;
     "noctalia/nix-snowflake-colours.svg".source = ../dotfiles/noctalia/nix-snowflake-colours.svg;
