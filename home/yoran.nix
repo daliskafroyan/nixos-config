@@ -480,6 +480,20 @@ in
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
+  systemd.user.services.mpvpaper = {
+    Unit = {
+      Description = "Video wallpaper";
+      After = [ "niri.service" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.mpvpaper}/bin/mpvpaper -o 'no-audio loop panscan=1.0' * /home/${username}/.local/share/wallpapers/current.mp4";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   # Reuse Noctalia's existing Wayland lock screen for logind lock and sleep
   # events. systemd-lock-handler bridges these targets from the active session.
   systemd.user.services.noctalia-lock = {
