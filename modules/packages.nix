@@ -1,6 +1,82 @@
 { inputs, pkgs, ... }:
 
 let
+  # Statically linked, so the release binary runs as-is. Its self-update
+  # (`hc update`) cannot replace a store path: bump version and hash here.
+  herdrCore = pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "herdr-core";
+    version = "0.1.14";
+
+    src = pkgs.fetchurl {
+      url = "https://releases.herdr.dev/core/${version}/herdr-core-linux-x86_64.tar.gz";
+      hash = "sha256-6dur3q0M4M495RtvVMyVSe/tu0Gy+ESLaTKrDRRCND4=";
+    };
+
+    dontConfigure = true;
+    dontBuild = true;
+
+    sourceRoot = ".";
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm0755 herdr-core "$out/bin/herdr-core"
+      ln -s herdr-core "$out/bin/hc"
+      runHook postInstall
+    '';
+
+    meta = with pkgs.lib; {
+      description = "Run programs and coding agents in terminals that stay alive";
+      homepage = "https://herdr.dev";
+      mainProgram = "hc";
+      platforms = [ "x86_64-linux" ];
+    };
+  };
+
+  # GPUI desktop client for herdr-core. It links xcb/xkbcommon and dlopens
+  # Vulkan, EGL and Wayland, so those go on its runpath. Update like herdrCore.
+  herdrApp = pkgs.stdenv.mkDerivation rec {
+    pname = "herdr-app";
+    version = "0.1.9";
+
+    src = pkgs.fetchurl {
+      url = "https://releases.herdr.dev/app/${version}/herdr-app-linux-x86_64.tar.gz";
+      hash = "sha256-2m97QPbEFsW03vjbz4t2Z30Cvk9LRdBqTWWHZoUOC0U=";
+    };
+
+    nativeBuildInputs = [ pkgs.autoPatchelfHook pkgs.copyDesktopItems ];
+    buildInputs = with pkgs; [ libxcb libxkbcommon stdenv.cc.cc.lib ];
+    runtimeDependencies = with pkgs; [ libGL vulkan-loader wayland ];
+
+    dontConfigure = true;
+    dontBuild = true;
+
+    desktopItems = [
+      (pkgs.makeDesktopItem {
+        name = "herdr-app";
+        desktopName = "Herdr";
+        comment = "Terminals and coding agents that keep running";
+        exec = "herdr-app";
+        icon = "herdr-app";
+        categories = [ "Development" ];
+        startupWMClass = "herdr-app";
+      })
+    ];
+
+    installPhase = ''
+      runHook preInstall
+      install -Dm0755 herdr-app "$out/bin/herdr-app"
+      install -Dm0644 herdr-app.svg "$out/share/icons/hicolor/scalable/apps/herdr-app.svg"
+      runHook postInstall
+    '';
+
+    meta = with pkgs.lib; {
+      description = "Desktop app for terminals and coding agents running in herdr-core";
+      homepage = "https://herdr.dev";
+      mainProgram = "herdr-app";
+      platforms = [ "x86_64-linux" ];
+    };
+  };
+
   drukBinary = pkgs.stdenvNoCC.mkDerivation {
     pname = "druk";
     version = "1.10.0";
@@ -156,6 +232,10 @@ in
     fastfetch
     nodejs
     druk
+    herdrCore
+    herdrApp
+    # Review tool used by the bercail Herdr layout; not in 25.11.
+    inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.tuicr
     inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.openspec.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.aven
