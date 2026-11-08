@@ -266,7 +266,6 @@ in
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.agentsview
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.gno
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.herdr
-    inputs.ttt.packages.${pkgs.stdenv.hostPlatform.system}.default
     obs-studio
     tldrawOffline
     tldrawDesktopEntry
