@@ -102,6 +102,19 @@ default_floating = true
 default_position = { x = 20, y = 20, anchor = "bottom_right" }
 
 # ==============================================================================
+# Scratchpads: hidden shelves shown and hidden over the current workspace.
+# Naming one removes Umbriel's implicit "default", so every action names its pad.
+
+[[scratchpad]]
+name = "main"
+
+# Drop-down terminal: the first toggle starts Ghostty, which joins the pad
+# through its launch token; later toggles only show and hide it.
+[[scratchpad]]
+name = "terminal"
+spawn_when_empty = "ghostty"
+
+# ==============================================================================
 # Layer rules: blur Noctalia's surfaces (from Umbriel's starting config)
 
 [[layer_rule]]
@@ -265,6 +278,13 @@ action = "overview-open"
 "Print" = { action = "spawn /run/current-system/sw/bin/noctalia msg screenshot-region", repeat = false }
 "Mod+Ctrl+Shift+S" = { action = "spawn /run/current-system/sw/bin/noctalia msg screenshot-fullscreen", repeat = false }
 "Ctrl+Print" = { action = "spawn /run/current-system/sw/bin/noctalia msg screenshot-fullscreen", repeat = false }
+
+# Scratchpads
+"Mod+grave" = "scratchpad-toggle main"
+"Mod+Shift+grave" = "window-toggle-scratchpad main"
+"Mod+Ctrl+grave" = "window-restore-from-scratchpad main"
+"Mod+Alt+grave" = "scratchpad-focus-next main"
+"Mod+Return" = "scratchpad-toggle terminal"
 
 # Session
 "Mod+Escape" = { action = "shortcuts-inhibit-toggle", allow_when_inhibited = true, repeat = false }
