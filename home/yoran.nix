@@ -69,6 +69,14 @@ in
 
   home.sessionPath = [ "$HOME/.local/bin" ];
 
+  # Apps that draw their own cursor read XCURSOR_THEME/SIZE; keep them in step
+  # with Umbriel's [input.cursor] so the pointer looks the same everywhere.
+  home.pointerCursor = {
+    name = "Adwaita";
+    package = pkgs.adwaita-icon-theme;
+    size = 24;
+  };
+
   programs.helix = {
     enable = true;
     settings = {

@@ -27,6 +27,12 @@ numlock_toggle = true
 tap = true
 natural_scroll = true
 
+# An empty theme falls back to the environment's, which is unset here, leaving
+# the small built-in cursor that ignores output scale. Size is in logical px.
+[input.cursor]
+theme = "Adwaita"
+size = 24
+
 # ==============================================================================
 # Appearance: Gruvbox, square corners, borders standing in for niri's focus ring
 
