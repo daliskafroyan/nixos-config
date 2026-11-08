@@ -164,6 +164,8 @@ action = "overview-open"
 "Mod+L" = "window-focus-right"
 "Mod+Home" = "column-focus-first"
 "Mod+End" = "column-focus-last"
+# Back to the previously focused window; pressing again returns (niri's Mod+Tab).
+"Mod+Tab" = { action = "window-focus-last", repeat = false }
 
 # Move
 "Mod+Ctrl+Left" = "column-move-left"
