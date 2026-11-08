@@ -9,6 +9,15 @@
 attach_modal_dialogs = true
 
 # ==============================================================================
+# Outputs: the laptop panel is 2880x1800 at ~244 DPI. Umbriel starts outputs at
+# scale 1 (niri guessed one), which makes everything tiny; 1.75 gives a
+# 1646x1029 logical desktop. Use 2 for larger, 1.5 for more room.
+
+[output.eDP-1]
+mode = "2880x1800@120"
+scale = 1.75
+
+# ==============================================================================
 # Input
 
 [input.keyboard]
