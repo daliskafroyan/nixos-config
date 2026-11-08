@@ -1,6 +1,8 @@
 { pkgs, inputs, username, ... }:
 
 {
+  imports = [ inputs.umbriel.nixosModules.default ];
+
   nixpkgs.config.allowUnfree = true;
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
@@ -8,15 +10,20 @@
       "https://noctalia.cachix.org"
       "https://zed.cachix.org"
       "https://cache.numtide.com"
+      "https://umbriel.cachix.org"
     ];
     extra-trusted-public-keys = [
       "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
       "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+      "umbriel.cachix.org-1:JfNq/2yg2S6D6z4Z2dVSZrZlDPQTKtexB6GAVLD98nw="
     ];
   };
 
   services.xserver.enable = true;
+  # Noctalia's own compositor is the default session; niri stays installed as a
+  # fallback session that GDM can still start.
+  programs.umbriel.enable = true;
   programs.niri = {
     enable = true;
     package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.niri;
@@ -26,7 +33,7 @@
   # Lets prebuilt binaries (e.g. LSP servers downloaded by Mason) find a dynamic linker.
   programs.nix-ld.enable = true;
   services.displayManager.gdm.enable = true;
-  services.displayManager.defaultSession = "niri";
+  services.displayManager.defaultSession = "umbriel";
   xdg.portal.enable = true;
   security.polkit.enable = true;
 
@@ -70,10 +77,10 @@
     freeSwapThreshold = 15;
     reportInterval = 300;
     extraArgs = [
-      # Niri resets OOMScoreAdjust after startup, so use earlyoom's own
-      # supported candidate filter to preserve the compositor.
+      # Compositors reset OOMScoreAdjust after startup, so use earlyoom's own
+      # supported candidate filter to preserve them.
       "--avoid"
-      "^niri$"
+      "^(niri|umbriel)$"
     ];
   };
 

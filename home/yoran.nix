@@ -251,6 +251,9 @@ in
     # and lazyvim.json back into this directory.
     "nvim".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system-configuration/dotfiles/nvim";
     "niri/config.kdl".source = ../dotfiles/niri/config.kdl;
+    # Linked to the checkout so edits apply on save without a rebuild
+    # (Umbriel watches its config file).
+    "umbriel/config.toml".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/system-configuration/dotfiles/umbriel/config.toml";
     "noctalia/config.toml".source = ../dotfiles/noctalia/config.toml;
     "noctalia/nix-snowflake-colours.svg".source = ../dotfiles/noctalia/nix-snowflake-colours.svg;
     "noctalia/nix-snowflake-white.svg".source = ../dotfiles/noctalia/nix-snowflake-white.svg;
@@ -279,7 +282,7 @@ in
     Unit = {
       Description = "Noctalia shell";
       PartOf = [ "graphical-session.target" ];
-      After = [ "niri.service" ];
+      After = [ "graphical-session.target" ];
     };
     Service = {
       Type = "simple";
@@ -294,7 +297,7 @@ in
   systemd.user.services.mpvpaper = {
     Unit = {
       Description = "Video wallpaper";
-      After = [ "niri.service" ];
+      After = [ "graphical-session.target" ];
       PartOf = [ "graphical-session.target" ];
     };
     Service = {

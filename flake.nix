@@ -14,6 +14,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     noctalia.url = "github:noctalia-dev/noctalia";
+    # The cachix branch tracks commits whose binaries are on umbriel.cachix.org;
+    # its nixpkgs must not follow ours or the cached store paths stop matching.
+    umbriel.url = "github:noctalia-dev/umbriel/cachix";
     helium-browser.url = "github:oxcl/nix-flake-helium-browser";
     zed.url = "github:zed-industries/zed";
     llm-agents.url = "github:numtide/llm-agents.nix";
